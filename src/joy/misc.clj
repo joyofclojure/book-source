@@ -26,4 +26,12 @@
   (for [[i v] (index coll) :when (pred v)]
     i))
 
+(defn lz-rec-step [s]
+  (lazy-seq
+   (if (seq s)
+     [(first s) (lz-rec-step (rest s))]
+     [])))
+
+(def tri-nums (map triangle (iterate inc 1)))
+
 
