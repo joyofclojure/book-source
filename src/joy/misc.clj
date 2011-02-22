@@ -1,6 +1,9 @@
 (ns joy.misc
   "Misc. functions and macros from the book.")
 
+(defn join [sep s]
+  (apply str (interpose sep s)))
+
 (defn best [f xs]
   (reduce #(if (f % %2) % %2) xs))
 
@@ -34,4 +37,46 @@
 
 (def tri-nums (map triangle (iterate inc 1)))
 
+(def fifth (comp first rest rest rest rest))
+
+;; chapter 7
+
+(defn fnth [n]
+  (apply comp
+         (cons first (take (dec n) (repeat rest)))))
+
+(defn slope [p1 p2]
+  {:pre [(not= p1 p2) (vector? p1) (vector? p2)]
+   :post [(float? %)]}
+  (/ (- (p2 1) (p1 1)) 
+     (- (p2 0) (p1 0))))
+
+(def times-two
+  (let [x 2]
+    (fn [y] (* y x))))
+
+(def add-and-get
+  (let [ai (java.util.concurrent.atomic.AtomicInteger.)]
+    (fn [y] (.addAndGet ai y))))
+
+(defn times-n [n]
+  (let [x n]
+    (fn [y] (* y x))))
+
+(defn divisible [denom]
+  (fn [num]
+    (zero? (rem num denom))))
+
+(defn filter-divisible [denom s]
+  (filter #(zero? (rem % denom))
+          s))
+
+(defn pow [base exp]
+  (letfn [(kapow [base exp acc]
+            (if (zero? exp)
+              acc
+              (recur base (dec exp) (* base acc))))]
+    (kapow base exp 1)))
+
+;; chapter 8
 
