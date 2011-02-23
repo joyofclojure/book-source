@@ -90,3 +90,9 @@
   `(try (-> ~@forms)
         (catch NullPointerException _# nil)))
 
+(def slowly (fn [x] (Thread/sleep 3000) x))
+(def sometimes-slowly (manipulable-memoize slowly))
+
+
+(defn sleeper [s thing] (Thread/sleep (* 1000 s)) thing)
+
