@@ -94,5 +94,43 @@
 (def sometimes-slowly (manipulable-memoize slowly))
 
 
+;; chapter 11
+
 (defn sleeper [s thing] (Thread/sleep (* 1000 s)) thing)
+
+
+;; chapter 12
+
+(defn ^Float asum-sq [^floats xs]
+  (let [^floats dbl (amap xs i ret
+                  (* (aget xs i)
+                     (aget xs i)))]
+    (areduce dbl i ret 0
+             (+ ret (aget dbl i)))))
+
+(defn zencat1 [x y]
+  (loop [src y, ret x]
+    (if src
+      (recur (next src) (conj ret (first src)))
+      ret)))
+    
+(defn zencat2 [x y]
+  (loop [src y, ret (transient x)]                  ;; #: Create transient
+    (if src
+      (recur (next src) (conj! ret (first src)))    ;; #: Use transient conj!
+      (persistent! ret))))                          ;; #: Return persistent
+
+
+(defn seq1 [s]
+  (lazy-seq
+   (when-let [[x] (seq s)]
+     (cons x (seq1 (rest s))))))
+
+(defn mean
+  "Takes a sequence of integers and returns their mean value"
+  [sq]
+  (let [length (int (count sq))]
+    (if (zero? length)
+      0
+      (/ (int (reduce + sq)) length))))
 
