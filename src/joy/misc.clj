@@ -134,3 +134,37 @@
       0
       (/ (int (reduce + sq)) length))))
 
+
+;; chapter 13
+
+(defn with-redefs-fn [binding-map func & args]
+  (let [root-bind (fn [m]
+                    (doseq [[a-var a-val] m] (.bindRoot a-var a-val)))
+        old-vals (zipmap (keys binding-map)
+                         (map deref (keys binding-map)))]
+    (try
+      (root-bind binding-map)
+      (apply func args)
+      (finally
+       (root-bind old-vals)))))
+
+(defmacro with-redefs [bindings & body]
+  `(with-redefs-fn ~(zipmap (map #(list `var %) (take-nth 2 bindings))
+                            (take-nth 2 (next bindings)))
+     (fn [] ~@body)))
+
+
+(defmacro defformula [nm bindings & formula]
+  `(let ~bindings
+     (let [formula#   (agent ~@formula) ;; #: Create formula as Agent
+           update-fn# (fn [key# ref# o# n#] 
+                        (send formula# (fn [_#] ~@formula)))]
+       (doseq [r# ~(vec (map bindings (range 0 (count bindings) 2)))]
+         (add-watch r# :update-formula update-fn#)) ;; #: Add a watch to each reference
+       (def ~nm formula#))))
+    
+(def h (ref 25))
+(def ab (ref 100))
+    
+(defformula avg [at-bats ab hits h] ;; #: Create baseball formula
+  (float (/ @hits @at-bats)))
