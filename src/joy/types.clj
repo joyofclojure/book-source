@@ -1,5 +1,6 @@
 (ns joy.types
-  "The example of using deftype from section 9.3.3")
+  "The example of using deftype from section 9.3.3"
+  (:use joy.fixo))
 
 (deftype InfiniteConstant [i]
   clojure.lang.ISeq

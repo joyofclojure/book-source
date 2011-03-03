@@ -6,7 +6,7 @@
   (^int sliceCount []))
 
 (def dumb
-  (reify user.ISliceable
+  (reify ISliceable
     (slice [_ s e] [:empty])
     (sliceCount [_] 42)))
 
@@ -15,7 +15,7 @@
   (sliceCount [this]))
 
 
-(extend user.ISliceable
+(extend ISliceable
   Sliceable
   {:slice (fn [this s e] (.slice this s e))
    :sliceCount (fn [this] (.sliceCount this))})

@@ -52,9 +52,9 @@
   (for [t things]
     {:tag :thing, 
      :attrs (grok-attrs (take-while (comp not vector?) t))
-     :content (if-let [c (grok-props (drop-while (comp not vector?) t))
+     :content (if-let [c (grok-props (drop-while (comp not vector?) t))]
                        [c]
-                       [])})))
+                       [])}))
     
 (defn grok-attrs [attrs]
   (into {:name (str (first attrs))}

@@ -1,6 +1,7 @@
 (ns joy.locks
   "Examples for locking from section 11.5"
-  (:refer-clojure :exclude [aget aset count seq]))
+  (:refer-clojure :exclude [aget aset count seq])
+  (:use [joy.mutation :only (dothreads!)]))
 
 (defprotocol SafeArray ;; #: SafeArray features a small set of functions
   (aset  [this i f])

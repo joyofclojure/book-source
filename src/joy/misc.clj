@@ -35,8 +35,6 @@
      [(first s) (lz-rec-step (rest s))]
      [])))
 
-(def tri-nums (map triangle (iterate inc 1)))
-
 (def fifth (comp first rest rest rest rest))
 
 ;; chapter 7
@@ -89,9 +87,6 @@
 (defmacro -?> [& forms]
   `(try (-> ~@forms)
         (catch NullPointerException _# nil)))
-
-(def slowly (fn [x] (Thread/sleep 3000) x))
-(def sometimes-slowly (manipulable-memoize slowly))
 
 
 ;; chapter 11
