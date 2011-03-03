@@ -6,15 +6,7 @@
     [x y (rem (bit-xor x y) 256)]))
 
 (def frame (java.awt.Frame.))
-
-(.setVisible frame true)
-(.setSize frame (java.awt.Dimension. 200 200))
-
 (def gfx (.getGraphics frame))
-
-(.fillRect gfx 100 100 50 75)
-(.setColor gfx (java.awt.Color. 255 128 0))
-(.fillRect gfx 100 150 75 50)
 
 (defn clear [g] (.clearRect g 0 0 200 200))
 
@@ -29,6 +21,13 @@
     (.setColor gfx (java.awt.Color. v v v))
     (.fillRect gfx x y 1 1)))
 
-(draw-values bit-and 256 256)
-(draw-values + 256 256)
-(draw-values * 256 256)
+(comment
+  (.setVisible frame true)
+  (.setSize frame (java.awt.Dimension. 200 200))
+  (.fillRect gfx 100 100 50 75)
+  (.setColor gfx (java.awt.Color. 255 128 0))
+  (.fillRect gfx 100 150 75 50)
+
+  (draw-values bit-and 256 256)
+  (draw-values + 256 256)
+  (draw-values * 256 256))
