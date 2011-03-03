@@ -1,5 +1,5 @@
-The Joy of Clojure
-==================
+[The Joy of Clojure](http://joyofclojure.com)
+=============================================
 
 ![Joy](http://joyofclojure.com/joy.png "The Joy of Clojure")
 
