@@ -1,6 +1,7 @@
 (ns joy.refs
   "Examples for Ref in section 11.2"
-  (use [joy.mutation :only (dothreads!)]))
+  (use [joy.mutation :only (dothreads!)]
+       [joy.a :only (neighbors)]))
 
 
 (def initial-board
