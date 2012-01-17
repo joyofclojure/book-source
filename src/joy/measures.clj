@@ -10,7 +10,7 @@
       (if (vector? spec)
         (let [[conv to] spec]
           (* conv
-             (relative-units to units [u history])))
+             (relative-units to units (conj history u))))
           spec))))
 
 (defmacro defunits-of [quantity base-unit & units]
@@ -26,7 +26,7 @@
                      conversions))))))
 
 (comment
-  (defunits distance :m
+  (defunits-of distance :m
     :km 1000
     :cm 1/100
     :mm [1/10 :cm]
