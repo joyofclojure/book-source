@@ -1,13 +1,12 @@
-# second-edition
+# Example code for The Joy of Clojure, 2nd edition
 
-A Clojure library designed to ... well, that part is up to you.
+The source code is explorable via [Leiningen][l] or [Light Table][lt].
 
-## Usage
-
-FIXME
+[l]: http://github.com/technomancy/leiningen
+[lt]: http://www.lighttable.com/
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013 Fogus and Houser
 
 Distributed under the Eclipse Public License, the same as Clojure.
