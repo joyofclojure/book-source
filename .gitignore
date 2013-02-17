@@ -2,3 +2,4 @@ classes
 lib
 *.jar
 docs
+.DS_Store
