@@ -3,3 +3,4 @@ lib
 *.jar
 docs
 .DS_Store
+target

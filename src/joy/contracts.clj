@@ -40,9 +40,10 @@
   (defcontract doubler 
     [x]
     (require
+     (number? x)
      (pos? x))
     (ensure
      (= (* 2 x) %))))
     
 (def times2 (partial doubler-contract #(* 2 %))) ;; #2_contract_comp: Test correct fn
-    ;; [compose_contract]: Composition of contract function and constrained function
+
