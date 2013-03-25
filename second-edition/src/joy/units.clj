@@ -12,6 +12,15 @@
 (comment
   (def simple-metric {:meter 1, :km 1000, :cm 1/100, :mm [1/10 :cm]})
 
+
+  ;; how many meters are in 3 kilometers, 10 meters, 80 centimeters, 10mm?
+  (->    (* 3  (:km simple-metric))
+      (+ (* 10 (:meter simple-metric)))
+      (+ (* 80 (:cm simple-metric)))
+      (+ (* (:cm simple-metric)
+            (* 10 (first (:mm simple-metric)))))
+      float)
+
   (convert simple-metric [1 :meter])
 
   ;;=> 1
@@ -24,7 +33,7 @@
 
   ;;=> 1/10
 
-  (convert simple-metric [3 :km 10 :meter 100 :cm])
+  (float (convert simple-metric [3 :km 10 :meter 80 :cm 10 :mm]))
 
   ;;=> 3011N
 )
