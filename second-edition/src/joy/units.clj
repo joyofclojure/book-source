@@ -1,30 +1,30 @@
 (ns joy.units)
 
-(defn convert-unit [context descriptor]
+(defn convert [context descriptor]
   (reduce +
-    (map (fn [[magnitude unit]]
+    (map (fn [[mag unit]]
            (let [val (get context unit)]
-             (cond (keyword? val) (convert-unit context [magnitude val])
-                   (vector? val)  (* magnitude (convert-unit context val))
-                   :default       (* magnitude val))))
+             (cond (keyword? val) (convert context [mag val])
+                   (vector? val)  (* mag (convert context val))
+                   :default       (* mag val))))
          (partition 2 descriptor))))
 
 (comment
   (def simple-metric {:meter 1, :km 1000, :cm 1/100, :mm [1/10 :cm]})
 
-  (convert-unit simple-metric [1 :meter])
+  (convert simple-metric [1 :meter])
 
   ;;=> 1
 
-  (convert-unit simple-metric [50 :cm])
+  (convert simple-metric [50 :cm])
 
   ;;=> 1/2
 
-  (convert-unit simple-metric [100 :mm])
+  (convert simple-metric [100 :mm])
 
   ;;=> 1/10
 
-  (convert-unit simple-metric [3 :km 10 :meter 100 :cm])
+  (convert simple-metric [3 :km 10 :meter 100 :cm])
 
   ;;=> 3011N
-  )
+)
