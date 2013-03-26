@@ -11,11 +11,28 @@
           (partition 2 descriptor)))
 
 
+(def distance-reader
+  (partial convert
+           {:m 1
+            :km 1000,
+            :cm 1/100,
+            :mm [1/10 :cm]}))
 
 
+(def time-reader
+  (partial convert
+           {:min 1
+            :sec 60,
+            :hr  [60 :min],
+            :day [24 :hr]}))
 
 
+(comment
 
+  (binding [clojure.core/*data-readers* '{unit/time joy.units/time-reader}]
+    (read-string "#unit/time [1 :min 30 :sec]"))
+
+)
 
 
 
