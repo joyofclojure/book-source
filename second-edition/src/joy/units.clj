@@ -21,17 +21,24 @@
 
 (def time-reader
   (partial convert
-           {:min 1
-            :sec 60,
+           {:sec 1
+            :min 60,
             :hr  [60 :min],
             :day [24 :hr]}))
 
 
 (comment
 
-  (binding [clojure.core/*data-readers* '{unit/time joy.units/time-reader}]
+  (read-string "#unit/length [1 :m]")
+  ;;=> 1
+  
+  (binding [clojure.core/*data-readers* {'unit/time #'joy.units/time-reader}]
     (read-string "#unit/time [1 :min 30 :sec]"))
 
+  ;;=> 90
+
+  (binding [*default-data-reader-fn* #(-> {:tag %1 :payload %2})]
+    (read-string "#nope [:doesnt-exist]"))
 )
 
 
