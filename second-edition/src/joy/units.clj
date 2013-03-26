@@ -10,6 +10,79 @@
           0
           (partition 2 descriptor)))
 
+
+
+
+
+
+
+
+
+
+
+(defn relative-units [context unit]
+  (if-let [spec (get context unit)]
+    (if (vector? spec)
+      (convert context spec)
+      spec)
+    (throw (RuntimeException. (str "Undefined unit " unit)))))
+
+
+(defmacro defunits-of [name base-unit & conversions]
+  (let [magnitude (gensym)
+        unit (gensym)
+        units-map (into `{~base-unit 1}                         ;; #: Create the units map
+                        (map vec (partition 2 conversions)))]
+    `(defmacro ~(symbol (str "unit-of-" name))                  ;; #: Define the unit-of macro
+       [~magnitude ~unit]
+       `(* ~~magnitude                                          ;; #: Multiply magnitude by target unit
+           ~(case ~unit
+              ~@(mapcat                                     ;; #: Unroll the unit conversions into a case look-up
+                 (fn [[u# & r#]]
+                   `[~u# ~(relative-units units-map u#)])
+                 units-map))))))
+
+(defunits-of distance :m
+  :km 1000
+  :cm 1/100
+  :mm [1/10 :cm]
+  :ft 0.3048
+  :mile [5280 :ft])
+
+
+(comment
+
+  (unit-of-distance 1 :m)
+  ;;=> 1
+
+  (unit-of-distance 1 :mm)
+  ;;=> 1/1000
+
+  (unit-of-distance 1 :ft)
+  ;;=> 0.3048
+
+  (unit-of-distance 1 :mile) 
+  ;;=> 1609.344
+  
+)
+
+
+(comment
+
+  (def simple-metric {:meter 1, :km 1000, :cm 1/100, :mm [1/10 :cm]})
+
+  (relative-units simple-metric :cm)
+  ;;=> 1/100
+
+  (relative-units simple-metric :mm)
+  ;;=> 1/1000
+
+  (relative-units {:m 1, :cm 1/100, :mm [1/10 :cm]} :ramsden-chain)
+  ;; Runtime....
+)
+
+
+
 (comment
   (def simple-metric {:meter 1, :km 1000, :cm 1/100, :mm [1/10 :cm]})
 
