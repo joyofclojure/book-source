@@ -1,5 +1,7 @@
 (ns joy.promises
-  "Examples for promises from section 11.7")
+  "Examples for promises from section 11.7"
+  (:use [joy.mutation :only [dothreads!]])
+  (:use [joy.futures :only [rss-children]]))
 
 (defmacro with-promises [[n tasks _ as] & body]
   (when as
@@ -7,7 +9,7 @@
            n# (count tasks#)
            promises# (take n# (repeatedly promise))]
        (doseq [i# (range n#)]
-         (dothreads 
+         (dothreads!
           (fn []
             (deliver (nth promises# i#)
                      ((nth tasks# i#))))))
