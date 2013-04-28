@@ -1,5 +1,5 @@
 (ns joy.refs
-  "Examples for Ref in section 11.2"
+  "Examples for Ref in section 10.2"
   (use [joy.mutation :only (dothreads!)]
        [joy.a :only (neighbors)]))
 
@@ -12,7 +12,7 @@
 (defn board-map [f bd]
   (vec (map #(vec (for [s %] (f s))) bd)))
 
-(defn reset!
+(defn reset-board!
   "Resets the board state. Generally these types of functions are a
    bad idea, but matters of page count force our hand."
   []

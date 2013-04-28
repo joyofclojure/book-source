@@ -1,16 +1,16 @@
 (ns joy.mutation
-  "Common utilities for chapter 11")
+  "Common utilities for chapter 10")
 
-(import '(java.util.concurrent Executors)) 
+(import '(java.util.concurrent Executors))
 
-(def *pool* (Executors/newFixedThreadPool 
-             (+ 2 (.availableProcessors (Runtime/getRuntime)))))
-    
-(defn dothreads! [f & {thread-count :threads 
+(def thread-pool (Executors/newFixedThreadPool
+                  (+ 2 (.availableProcessors (Runtime/getRuntime)))))
+
+(defn dothreads! [f & {thread-count :threads
                        exec-count :times
                        :or {thread-count 1 exec-count 1}}]
   (dotimes [t thread-count]
-    (.submit *pool* #(dotimes [_ exec-count] (f)))))
+    (.submit thread-pool #(dotimes [_ exec-count] (f)))))
 
 
 ;; stress ref
