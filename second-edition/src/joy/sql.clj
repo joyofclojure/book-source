@@ -10,6 +10,24 @@
                            (map expand-expr args)) ")")))
     expr))
 
+(comment
+
+  (expand-expr 42)
+  
+  (expand-expr '(= X.a Y.b))
+
+  (expand-expr '(AND (< a 5) (< b ~max)))
+
+  (expand-expr '(AND (< a 5) (OR (> b 0) (< b ~max))))
+
+  (expand-expr `(unquote max))
+
+  (let [max 42]
+    `(unquote ~max))
+
+
+)
+
 (declare expand-clause)
 
 (def clause-map
