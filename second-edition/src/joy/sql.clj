@@ -31,10 +31,14 @@
 (defn process-where-clause [expr]
   (str " WHERE " (shuffle-expr expr)))
 
+(def WHERE process-where-clause)
+
 (comment
 
-  (process-where-clause '(WHERE (AND (< a 5) (< b ~max))))
+  (process-where-clause '(AND (< a 5) (< b ~max)))
   ;;=> " WHERE (((a < 5) AND (b < ?)))"
+
+  (process-where-clause '(AND (< a 5) (< b ~max)))
 
 )
 
@@ -74,6 +78,10 @@
 
 (comment
 
+  (SELECT
+   '[a b c]
+   (FROM 'X (LEFT-JOIN 'Y :ON '(= X.a Y.b)))
+   )
 
 )
 
