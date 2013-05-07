@@ -28,77 +28,74 @@
 
 )
 
-(defn process-where-clause [expr]
-  (str " WHERE " (shuffle-expr expr)))
-
-(def WHERE process-where-clause)
+(defn process-where-clause [processor expr]
+  (str " WHERE " (processor expr)))
 
 (comment
 
-  (process-where-clause '(AND (< a 5) (< b ~max)))
+  (process-where-clause shuffle-expr '(AND (< a 5) (< b ~max)))
   ;;=> " WHERE (((a < 5) AND (b < ?)))"
-
-  (process-where-clause '(AND (< a 5) (< b ~max)))
-
 )
 
-(defn process-left-join-clause [table on expr]
+(defn process-left-join-clause [processor table on expr]
   (str " LEFT JOIN " table
-       " ON " (shuffle-expr expr)))
-
-(def LEFT-JOIN process-left-join-clause)
+       " ON " (processor expr)))
 
 (comment
-  (apply process-left-join-clause '(Y :ON (= X.a Y.b)))
+  (apply process-left-join-clause shuffle-expr '(Y :ON (= X.a Y.b)))
+  
+  ;;=> " LEFT JOIN Y ON (X.a = Y.b)"
 
-  (LEFT-JOIN 'Y :ON '(= X.a Y.b))
+  (let [LEFT-JOIN (partial process-left-join-clause shuffle-expr)]
+    (LEFT-JOIN 'Y :ON '(= X.a Y.b)))
+
+  ;;=> " LEFT JOIN Y ON (X.a = Y.b)"
 )
 
-(declare expand-clause)
-
-(defn process-from-clause [table & joins]
+(defn process-from-clause [processor table & joins]
   (apply str " FROM " table
-         (map shuffle-expr joins)))
-
-(def FROM process-from-clause)
+         (map processor joins)))
 
 (comment
 
-  (FROM 'X (LEFT-JOIN 'Y :ON '(= X.a Y.b)))
+  (process-from-clause shuffle-expr 'X
+    (process-left-join-clause shuffle-expr 'Y :ON '(= X.a Y.b)))
 
   ;;=> " FROM X LEFT JOIN Y ON (X.a = Y.b)"
 
 )
 
-(defn process-select-clause [fields & clauses]
+(defn process-select-clause [processor fields & clauses]
   (apply str "SELECT " (str/join ", " fields)
-         (map shuffle-expr clauses)))
-
-(def SELECT process-select-clause)
+         (map processor clauses)))
 
 (comment
 
-  (SELECT
+  (process-select-clause shuffle-expr
    '[a b c]
-   (FROM 'X (LEFT-JOIN 'Y :ON '(= X.a Y.b)))
-   )
+   (process-from-clause shuffle-expr 'X
+                        (process-left-join-clause shuffle-expr 'Y :ON '(= X.a Y.b)))
+   (process-where-clause shuffle-expr '(AND (< a 5) (< b ~max))))
 
+  ;;=> "SELECT a, b, c FROM X LEFT JOIN Y ON (X.a = Y.b) WHERE ((a < 5) AND (b < ?))"
 )
 
-(def clause-map
-  {'SELECT    process-select-clause
-   'FROM      process-from-clause
-   'LEFT-JOIN process-left-join-clause
-   'WHERE     process-where-clause})
+(declare apply-syntax)
 
-(defn expand-clause [[op & args]]
-  (apply (clause-map op) args))
+(def ^:dynamic *clause-map*
+  {'SELECT    (partial process-select-clause apply-syntax)
+   'FROM      (partial process-from-clause apply-syntax)
+   'LEFT-JOIN (partial process-left-join-clause shuffle-expr)
+   'WHERE     (partial process-where-clause shuffle-expr)})
+
+(defn apply-syntax [[op & args]]
+  (apply (get *clause-map* op) args))
 
 (defmacro SELECT [& args]
-  [(expand-clause (cons 'SELECT args))
-   (vec (for [n (tree-seq coll? seq args)
-              :when (and (coll? n) (= (first n) `unquote))]
-          (second n)))])
+  {:query (apply-syntax (cons 'SELECT args))
+   :bindings (vec (for [n (tree-seq coll? seq args)
+                        :when (and (coll? n) (= (first n) `unquote))]
+                    (second n)))})
 
 (defn query [max]
   (SELECT [a b c]
@@ -106,6 +103,10 @@
                 (LEFT-JOIN Y :ON (= X.a Y.b)))
           (WHERE (AND (< a 5) (< b ~max)))))
 
-;; (query 9)
-;;=> ["SELECT a, b, c FROM X LEFT JOIN Y ON (X.a = Y.b) WHERE ((a < 5) AND (b < ?))" [9]]
-
+(comment
+  (query 9)
+  
+  ;;=> {:query "SELECT a, b, c FROM X LEFT JOIN Y ON (X.a = Y.b) WHERE ((a < 5) AND (b < ?))"
+  ;;    :bindings [9]}
+  
+)
