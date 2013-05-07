@@ -1,26 +1,26 @@
 (ns joy.sql
   (:use [clojure.string :as str :only []]))
 
-(defn expand-expr [expr]
+(defn shuffle-expr [expr]
   (if (coll? expr)
     (if (= (first expr) `unquote)
       "?"
       (let [[op & args] expr]
         (str "(" (str/join (str " " op " ")
-                           (map expand-expr args)) ")")))
+                           (map shuffle-expr args)) ")")))
     expr))
 
 (comment
 
-  (expand-expr 42)
+  (shuffle-expr 42)
   
-  (expand-expr '(= X.a Y.b))
+  (shuffle-expr '(= X.a Y.b))
 
-  (expand-expr '(AND (< a 5) (< b ~max)))
+  (shuffle-expr '(AND (< a 5) (< b ~max)))
 
-  (expand-expr '(AND (< a 5) (OR (> b 0) (< b ~max))))
+  (shuffle-expr '(AND (< a 5) (OR (> b 0) (< b ~max))))
 
-  (expand-expr `(unquote max))
+  (shuffle-expr `(unquote max))
 
   (let [max 42]
     `(unquote ~max))
@@ -28,20 +28,60 @@
 
 )
 
+(defn process-where-clause [expr]
+  (str " WHERE " (shuffle-expr expr)))
+
+(comment
+
+  (process-where-clause '(WHERE (AND (< a 5) (< b ~max))))
+  ;;=> " WHERE (((a < 5) AND (b < ?)))"
+
+)
+
+(defn process-left-join-clause [table on expr]
+  (str " LEFT JOIN " table
+       " ON " (shuffle-expr expr)))
+
+(def LEFT-JOIN process-left-join-clause)
+
+(comment
+  (apply process-left-join-clause '(Y :ON (= X.a Y.b)))
+
+  (LEFT-JOIN 'Y :ON '(= X.a Y.b))
+)
+
 (declare expand-clause)
 
+(defn process-from-clause [table & joins]
+  (apply str " FROM " table
+         (map shuffle-expr joins)))
+
+(def FROM process-from-clause)
+
+(comment
+
+  (FROM 'X (LEFT-JOIN 'Y :ON '(= X.a Y.b)))
+
+  ;;=> " FROM X LEFT JOIN Y ON (X.a = Y.b)"
+
+)
+
+(defn process-select-clause [fields & clauses]
+  (apply str "SELECT " (str/join ", " fields)
+         (map shuffle-expr clauses)))
+
+(def SELECT process-select-clause)
+
+(comment
+
+
+)
+
 (def clause-map
-  {'SELECT    (fn [fields & clauses]
-                (apply str "SELECT " (str/join ", " fields)
-                       (map expand-clause clauses)))
-   'FROM      (fn [table & joins]
-                (apply str " FROM " table
-                       (map expand-clause joins)))
-   'LEFT-JOIN (fn [table on expr]
-                (str " LEFT JOIN " table
-                     " ON " (expand-expr expr)))
-   'WHERE     (fn [expr]
-                (str " WHERE " (expand-expr expr)))})
+  {'SELECT    process-select-clause
+   'FROM      process-from-clause
+   'LEFT-JOIN process-left-join-clause
+   'WHERE     process-where-clause})
 
 (defn expand-clause [[op & args]]
   (apply (clause-map op) args))
