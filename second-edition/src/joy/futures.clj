@@ -1,5 +1,5 @@
 (ns joy.futures
-  "Examples for futures from section 11.6"
+  "Examples for futures"
   (:require (clojure [xml :as xml]))
   (:require (clojure [zip :as zip]))
   (:import  (java.util.regex Pattern)))
