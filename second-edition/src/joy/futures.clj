@@ -9,9 +9,9 @@
     feed
     (zip/down feed)))
 
-(defmulti rss-children class)
+(defmulti feed-children class)
 
-(defmethod rss-children String [uri-str]
+(defmethod feed-children String [uri-str]
   (->> (xml/parse uri-str)
        zip/xml-zip
        normalize
@@ -26,7 +26,7 @@
            first))
 
 (defn count-text-task [extractor txt feed]
-  (let [items (rss-children feed)
+  (let [items (feed-children feed)
         re    (Pattern/compile (str "(?i)" txt))]
     (->> items
          (map extractor)
