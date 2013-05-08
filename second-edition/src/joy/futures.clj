@@ -4,12 +4,17 @@
   (:require (clojure [zip :as zip]))
   (:import  (java.util.regex Pattern)))
 
+(defn normalize [feed]
+  (if (= :feed (:tag (first feed)))
+    feed
+    (zip/down feed)))
 
 (defmulti rss-children class)
 
 (defmethod rss-children String [uri-str]
   (->> (xml/parse uri-str)
        zip/xml-zip
+       normalize
        zip/children
        (filter (comp #{:item :entry} :tag))))
 
@@ -69,6 +74,8 @@
    title
    "Yak"
    "http://blog.fogus.me/feed/")
+  ;;=> 1
   
   (occurrences )
+
 )
