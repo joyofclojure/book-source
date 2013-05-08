@@ -20,6 +20,13 @@
            :content
            first))
 
+(defn body [entry]
+  (some->> entry
+           :content
+           (some #(when (= :content (:tag %)) %))
+           :content
+           first))
+
 (defn count-tweet-text-task [txt feed]
   (let [items (rss-children feed)                     ;; #: Get kids
         re    (Pattern/compile (str "(?i)" txt))] ;; #: Create regex
@@ -56,12 +63,5 @@
 
   (def e (rss-children "http://feeds.feedburner.com/ElixirLang"))
 
-  (map title e)
-
-  
-  
-  (map title e)
-  (-> (first e) :content first :tag)
-  (-> (first e) :content (nth 5) :tag)
-  
+  (body (first e))  
 )
