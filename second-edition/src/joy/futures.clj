@@ -42,9 +42,9 @@
 
 (defn occurrences [extractor tag & feeds]
   (as-futures [feed feeds]
-     (count-text-task extractor tag feed)
-     :as results
-    =>
+    (count-text-task extractor tag feed)
+    :as results
+   =>
     (reduce (fn [total res] (+ total @res))
             0
             results)))
@@ -68,7 +68,16 @@
    "Yak"
    "http://blog.fogus.me/feed/")
   ;;=> 1
+
+  (count-text-task
+   title
+   "Ruby"
+   "http://www.ruby-lang.org/en/feeds/news.rss")
   
-  (occurrences content)
+  (occurrences title "released"
+    "http://blog.fogus.me/feed/"
+    "http://feeds.feedburner.com/ElixirLang"
+    "http://www.ruby-lang.org/en/feeds/news.rss")
+  ;;=> 11
 
 )
