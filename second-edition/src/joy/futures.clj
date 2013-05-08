@@ -25,13 +25,6 @@
            :content
            first))
 
-(defn content [entry]
-  (some->> entry
-           :content
-           (some #(when (= :content (:tag %)) %))
-           :content
-           first))
-
 (defn count-text-task [extractor txt feed]
   (let [items (rss-children feed)
         re    (Pattern/compile (str "(?i)" txt))]
@@ -76,6 +69,6 @@
    "http://blog.fogus.me/feed/")
   ;;=> 1
   
-  (occurrences )
+  (occurrences content)
 
 )
