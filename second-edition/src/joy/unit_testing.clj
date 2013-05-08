@@ -2,7 +2,8 @@
   (:require [joy.futures :refer (feed-children)]))
 
 (def stubbed-feed-children
-  (constantly [{:tag :title :content ["Stub"]}]))
+  (constantly [{:tag :title
+                :content ["Stub"]}]))
 
 (defn count-feed-entries [url]
   (count (feed-children url)))
@@ -14,6 +15,11 @@
 
   (with-redefs [feed-children stubbed-feed-children]
     (count-feed-entries "http://blog.fogus.me/feed/"))
+
+  ;;=> 1
+
+  (with-redefs [feed-children stubbed-feed-children]
+    (count-feed-entries "this is not a url"))
 
   ;;=> 1
 )
