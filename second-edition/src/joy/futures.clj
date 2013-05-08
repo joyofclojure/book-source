@@ -30,9 +30,10 @@
 (defn count-text-task [extractor txt feed]
   (let [items (rss-children feed)
         re    (Pattern/compile (str "(?i)" txt))]
-    (count 
-     (map #(re-seq re (first %))
-          (map extractor items)))))
+    (->> items
+         (map extractor)
+         (mapcat #(re-seq re %))
+         count)))
 
 (defmacro as-futures [[a args] & body]
   (let [parts          (partition-by #{'=>} body)
@@ -41,9 +42,9 @@
     `(let [~res (for [~a ~args] (future ~@acts))]
        ~@task)))
 
-(defn occurrences [tag & feeds]
+(defn occurrences [extractor tag & feeds]
   (as-futures [feed feeds]
-     (count-text-task tag feed)
+     (count-text-task extractor tag feed)
      :as results
     =>
     (reduce (fn [total res] (+ total @res))
@@ -53,6 +54,21 @@
 (comment
 
   (count-text-task
+   title
    "Erlang"
    "http://feeds.feedburner.com/ElixirLang")
+  ;;=> 0
+
+  (count-text-task
+   title
+   "Elixir"
+   "http://feeds.feedburner.com/ElixirLang")
+  ;;=> 14
+
+  (count-text-task
+   title
+   "Yak"
+   "http://blog.fogus.me/feed/")
+  
+  (occurrences )
 )
