@@ -20,20 +20,19 @@
            :content
            first))
 
-(defn body [entry]
+(defn content [entry]
   (some->> entry
            :content
            (some #(when (= :content (:tag %)) %))
            :content
            first))
 
-(defn count-tweet-text-task [txt feed]
-  (let [items (rss-children feed)                     ;; #: Get kids
-        re    (Pattern/compile (str "(?i)" txt))] ;; #: Create regex
+(defn count-text-task [extractor txt feed]
+  (let [items (rss-children feed)
+        re    (Pattern/compile (str "(?i)" txt))]
     (count 
-     (mapcat #(re-seq re (first %)) ;; #: Get matches
-             (for [item items] ;; #: Filter non-items
-               (-> item :content first :content)))))) ;; #: Get title
+     (map #(re-seq re (first %))
+          (map extractor items)))))
 
 (defmacro as-futures [[a args] & body]
   (let [parts          (partition-by #{'=>} body)
@@ -42,9 +41,9 @@
     `(let [~res (for [~a ~args] (future ~@acts))]
        ~@task)))
 
-(defn tweet-occurrences [tag & feeds]
+(defn occurrences [tag & feeds]
   (as-futures [feed feeds]
-     (count-tweet-text-task tag feed)
+     (count-text-task tag feed)
      :as results
     =>
     (reduce (fn [total res] (+ total @res))
@@ -53,15 +52,7 @@
 
 (comment
 
-  (count-tweet-text-task
-   "#clojure"
-   "http://twitter.com/statuses/user_timeline/46130870.rss")
-
-  (count-tweet-text-task
+  (count-text-task
    "Erlang"
    "http://feeds.feedburner.com/ElixirLang")
-
-  (def e (rss-children "http://feeds.feedburner.com/ElixirLang"))
-
-  (body (first e))  
 )
