@@ -5,7 +5,7 @@
      (let [formula#   (agent ~@formula) 
            update-fn# (fn [key# ref# o# n#] 
                         (send formula# (fn [_#] ~@formula)))]
-       (doseq [r# ~(map bindings (range 0 (count bindings) 2))]
+       (doseq [r# ~(vec (map bindings (range 0 (count bindings) 2)))]
          (add-watch r# :update-formula update-fn#)) 
        (def ~nm formula#))))
     
