@@ -36,3 +36,6 @@
 )
 
 
+(defrecord LowFiSim [name descr])
+(defrecord HiFiSim  [name threads descr])
+
