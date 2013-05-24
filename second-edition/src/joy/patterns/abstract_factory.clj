@@ -18,3 +18,11 @@
   (for [[name cfg] sys-map]
     (construct name cfg)))
 
+(comment
+  
+  (construct-subsystems (:systems config))
+  ;;=> ({:name :pump, :type :feeder} {:name :sim1, :type :sim} {:name :sim2, :type :sim})
+
+  (describe-system :pump {:type :feeder, :descr "Feeder system"})
+)
+
