@@ -26,3 +26,13 @@
   (describe-system :pump {:type :feeder, :descr "Feeder system"})
 )
 
+(comment
+  (defmethod construct [:feeder nil]
+    [_ cfg]
+    (:descr cfg))
+  
+  (construct-subsystems (:systems config))
+  ;;=> ("Feeder system" {:name :sim1, :type :sim} {:name :sim2, :type :sim})
+)
+
+
