@@ -49,3 +49,13 @@
 )
 
 
+(comment
+  (defmethod construct [:sim :high]
+    [name cfg]
+    (->HiFiSim name (:threads cfg) (:descr cfg)))
+  
+  (construct-subsystems (:systems config))
+  ;;=> ("Feeder system" #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} #joy.patterns.abstract_factory.HiFiSim {:name :sim2, :threads nil, :descr "High-fidelity sim"}
+
+)
+
