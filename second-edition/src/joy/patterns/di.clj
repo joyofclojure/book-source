@@ -71,16 +71,9 @@
     (->FakeFeeder))
   
   (construct-subsystems (:systems config))
-  ;;=> ("Feeder system" #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} {:name :sim2, :type :sim
+  ;;=> (#joy.patterns.di.FakeFeeder{} #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} {:name :sim2, :type :sim
 )
 
 
-(comment
 
-
-  
-  (construct-subsystems (:systems config))
-  ;;=> ("Feeder system" #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} #joy.patterns.abstract_factory.HiFiSim {:name :sim2, :threads nil, :descr "High-fidelity sim"}
-
-)
 
