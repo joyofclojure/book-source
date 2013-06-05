@@ -22,10 +22,11 @@
   (handle [sim msg]))
 
 (defn construct-subsystems [sys-map]
-  (for [[name cfg] sys-map]
-    (let [sys (construct name cfg)]
-      (start! sys)
-      sys)))
+  (doall
+   (for [[name cfg] sys-map]
+     (let [sys (construct name cfg)]
+       (start! sys)
+       sys))))
 
 (defrecord LowFiSim [name descr])
 (defrecord HiFiSim  [name threads descr])
@@ -70,8 +71,10 @@
     [name cfg]
     (->FakeFeeder))
   
-  (construct-subsystems (:systems config))
+  (def systems (construct-subsystems (:systems config)))
   ;;=> (#joy.patterns.di.FakeFeeder{} #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} {:name :sim2, :type :sim
+
+  (handle (nth systems 2) {:weight 42})
 )
 
 
