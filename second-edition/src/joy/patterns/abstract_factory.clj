@@ -39,20 +39,22 @@
 (defrecord LowFiSim [name descr])
 (defrecord HiFiSim  [name threads descr])
 
+(defmethod construct [:sim :low]
+  [name cfg]
+  (->LowFiSim name (:descr cfg)))
+
 (comment
-  (defmethod construct [:sim :low]
-    [name cfg]
-    (->LowFiSim name (:descr cfg)))
+
   
   (construct-subsystems (:systems config))
   ;;=> ("Feeder system" #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} {:name :sim2, :type :sim
 )
 
+(defmethod construct [:sim :high]
+  [name cfg]
+  (->HiFiSim name (:threads cfg) (:descr cfg)))
 
 (comment
-  (defmethod construct [:sim :high]
-    [name cfg]
-    (->HiFiSim name (:threads cfg) (:descr cfg)))
   
   (construct-subsystems (:systems config))
   ;;=> ("Feeder system" #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} #joy.patterns.abstract_factory.HiFiSim {:name :sim2, :threads nil, :descr "High-fidelity sim"}
