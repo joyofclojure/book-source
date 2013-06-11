@@ -11,8 +11,12 @@
            :threads 2})
 
 (comment
+  
+  (factory/construct :lofi lofi)
 
   
+  
+  ;;=> #joy.patterns.abstract_factory.LowFiSim {:name :lofi, :descr "Low-fidelity sim"}
 
 )
 
@@ -23,12 +27,10 @@
 (defprotocol Sim
   (handle [sim msg]))
 
-(defrecord LowFiSim [name descr])
-(defrecord HiFiSim  [name threads descr])
 
 (comment
 
-  (extend-type LowFiSim
+  (extend-type joy.patterns.abstract_factory.LowFiSim
     Sys
     (start! [this] (println "Started a lofi simulator."))
     (stop!  [this] (println "Stopped a lofi simulator."))
@@ -36,7 +38,7 @@
     Sim
     (handle [this msg] (* (:weight msg) 3.14)))
 
-  (extend-type HiFiSim
+  (extend-type factory/HiFiSim
     Sys
     (start! [this] (println "Started a hifi simulator."))
     (stop!  [this] (println "Stopped a hifi simulator."))
@@ -46,7 +48,7 @@
       (Thread/sleep 2000)
       (* (:weight msg) 3.1415926535897932384626M)))
 
-  (construct-subsystems (:systems config))
+  (factory/construct (:systems config))
   ;; java.lang.IllegalArgumentException: No implementation of method: :start! of protocol: #'joy.patterns.di/Sys found for class: clojure.lang.PersistentArrayMap
 
   (defrecord FakeFeeder []
