@@ -6,3 +6,10 @@
 (defn initialize [cfg]
   (let [lib (:lib cfg)]
     lib))
+
+
+(comment
+
+  (initialize config)
+
+)
