@@ -81,30 +81,4 @@
     "http://feeds.feedburner.com/ElixirLang"
     "http://www.ruby-lang.org/en/feeds/news.rss")
   ;;=> 11
-
-
-  (defn tweet-items [k feed]
-    (k
-     (for [item (filter (comp #{:item :entry} :tag) (feed-children feed))]
-       (-> item :content first :content))))
-
-  (tweet-items
-    count
-    "https://api.twitter.com/1/statuses/user_timeline.rss?user_id=46130870")
-
-  (let [p (promise)]
-    (tweet-items #(deliver p (count %))
-                 "https://api.twitter.com/1/statuses/user_timeline.rss?user_id=46130870")
-
-    @p)
-
-  (defn cps->fn [f k]
-    (fn [& args]
-      (let [p (promise)]
-        (apply f (fn [x] (deliver p (k x))) args)
-        @p)))
-
-  (def count-items (cps->fn tweet-items count))
-
-  (count-items "http://api.twitter.com/1/statuses/user_timeline.rss?user_id=46130870")
 )
