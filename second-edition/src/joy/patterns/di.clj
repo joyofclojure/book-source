@@ -62,19 +62,7 @@
   ;; Started a lofi simulator.
   ;;=> #joy.patterns.abstract_factory.HiFiSim{:name :hifi, :threads 2, :descr "High-fidelity sim"}
   
-  (defrecord FakeFeeder []
-    Sys
-    (start! [this] (println "Started a fake feeder" ))
-    (stop!  [this] (println "Stopped a fake feeder")))
 
-  (defmethod construct [:feeder nil]
-    [name cfg]
-    (->FakeFeeder))
-  
-  (def systems (construct-subsystems (:systems config)))
-  ;;=> (#joy.patterns.di.FakeFeeder{} #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} {:name :sim2, :type :sim
-
-  (handle (nth systems 1) {:weight 42})
 )
 
 
