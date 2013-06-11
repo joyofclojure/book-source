@@ -13,9 +13,7 @@
     feed
     (zip/down feed)))
 
-(defmulti feed-children class)
-
-(defmethod feed-children String [uri-str]
+(defn feed-children [uri-str]
   (->> uri-str
        feed->zipper
        normalize
