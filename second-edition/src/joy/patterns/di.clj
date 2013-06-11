@@ -1,18 +1,20 @@
-(ns joy.patterns.di)
+(ns joy.patterns.di
+  (:require [joy.patterns.abstract-factory :as factory]))
 
-(def config
-  '{:systems {:pump {:type :feeder, :descr "Feeder system"}
-              :sim1 {:type :sim,    :descr "Low-fidelity sim",  :fidelity :low}
-              :sim2 {:type :sim,    :descr "High-fidelity sim", :fidelity :high, :threads 2}}})
+(def lofi {:type :sim,
+           :descr "Low-fidelity sim",
+           :fidelity :low})
 
-(defn describe-system [name cfg]
-  [(:type cfg) (:fidelity cfg)])
+(def hifi {:type :sim,
+           :descr "High-fidelity sim",
+           :fidelity :high,
+           :threads 2})
 
-(defmulti construct describe-system)
+(comment
 
-(defmethod construct :default [name cfg]
-  {:name name
-   :type (:type cfg)})
+  
+
+)
 
 (defprotocol Sys
   (start! [sys])
@@ -21,23 +23,8 @@
 (defprotocol Sim
   (handle [sim msg]))
 
-(defn construct-subsystems [sys-map]
-  (doall
-   (for [[name cfg] sys-map]
-     (let [sys (construct name cfg)]
-       (start! sys)
-       sys))))
-
 (defrecord LowFiSim [name descr])
 (defrecord HiFiSim  [name threads descr])
-
-(defmethod construct [:sim :low]
-  [name cfg]
-  (->LowFiSim name (:descr cfg)))
-
-(defmethod construct [:sim :high]
-  [name cfg]
-  (->HiFiSim name (:threads cfg) (:descr cfg)))
 
 (comment
 
@@ -74,7 +61,7 @@
   (def systems (construct-subsystems (:systems config)))
   ;;=> (#joy.patterns.di.FakeFeeder{} #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"} {:name :sim2, :type :sim
 
-  (handle (nth systems 2) {:weight 42})
+  (handle (nth systems 1) {:weight 42})
 )
 
 
