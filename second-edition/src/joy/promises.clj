@@ -1,7 +1,7 @@
 (ns joy.promises
   "Examples for promises from section 11.7"
-  (:use [joy.mutation :only [dothreads!]])
-  (:use [joy.futures :only [rss-children]]))
+  (:require [joy.mutation :refer (dothreads!)])
+  (:require [joy.futures :refer (rss-children)]))
 
 (defmacro with-promises [[n tasks _ as] & body]
   (when as
