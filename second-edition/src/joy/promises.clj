@@ -1,7 +1,7 @@
 (ns joy.promises
   "Examples for promises from section 11.7"
   (:require [joy.mutation :refer (dothreads!)])
-  (:require [joy.futures :refer (rss-children)]))
+  (:require [joy.futures :refer (feed-children)]))
 
 (defmacro with-promises [[n tasks _ as] & body]
   (when as
@@ -35,7 +35,7 @@
 
 (defn tweet-items [k feed]
   (k
-   (for [item (filter (comp #{:item} :tag) (rss-children feed))]
+   (for [item (filter (comp #{:item} :tag) (feed-children feed))]
      (-> item :content first :content))))
 
 (defn cps->fn [f k]
@@ -53,6 +53,6 @@
 
 ;; philosophers
 
-(def kant (promise)) 
+(def kant (promise))
 (def hume (promise))
 
