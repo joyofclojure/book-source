@@ -66,14 +66,31 @@
   ;;=> #joy.patterns.abstract_factory.HiFiSim{:name :sim2, :threads 2, :descr "High-fidelity sim"}
 
   (handle (build-system :sim2 hifi) {:weight 42})
-  ;; wait 5 seconds
+  ;; wait 5 seconds...
   ;;=> 131.9468914507713160154292M
     
   (defn simulate [answer fast slow opts]
     (future (deliver answer (handle slow opts)))
     (handle fast opts))
 
+  (def excellent (promise))
   
+  (simulate excellent
+            (build-system :sim1 lofi)
+            (build-system :sim2 hifi)
+            {:weight 42})
+  ;;=> 131.88
+  
+  (realized? excellent)
+  ;;=> false
+
+  ;; wait a few seconds
+
+  (realized? excellent)
+  ;;=> true
+
+  @excellent
+  ;;=> 131.9468914507713160154292M
 )
 
 
