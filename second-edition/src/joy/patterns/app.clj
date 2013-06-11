@@ -18,4 +18,7 @@
 
   (di/handle (initialize :mock-sim config) {})
   ;;=> 42
+
+  (di/handle (initialize :mock-sim config) {})
+  ;; java.lang.RuntimeException: Called start! more than once.  
 )

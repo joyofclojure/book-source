@@ -4,9 +4,14 @@
 
 (defrecord MockSim [name])
 
+(def starts (atom 0))
+
 (extend-type MockSim
   di/Sys
-  (start! [this] (println "Started a mock simulator."))
+  (start! [this]
+    (if (= 1 (swap! starts inc))
+      (println "Started a mock simulator.")
+      (throw (RuntimeException. "Called start! more than once."))))
   (stop!  [this] (println "Stopped a mock simulator."))
   
   di/Sim
