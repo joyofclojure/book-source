@@ -25,6 +25,10 @@
 (defprotocol Sim
   (handle [sim msg]))
 
+(defn build-system [name config]
+  (let [sys (factory/construct name config)]
+    (start! sys)
+    sys))
 
 (comment
 
@@ -38,11 +42,6 @@
 
   (start! (factory/construct :lofi lofi))
   ;; Started a lofi simulator.
-
-  (defn build-system [name config]
-    (let [sys (factory/construct name config)]
-      (start! sys)
-      sys))
 
   (build-system :sim1 lofi)
   ;; Started a lofi simulator.

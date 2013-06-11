@@ -12,7 +12,7 @@
   di/Sim
   (handle [_ _] 42))
 
-(defmethod construct [:mock nil]
+(defmethod factory/construct [:mock nil]
   [nom _]
   (MockSim. nom))
 
