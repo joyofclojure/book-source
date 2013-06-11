@@ -61,8 +61,10 @@
   (build-system :sim2 hifi)
   ;; Started a lofi simulator.
   ;;=> #joy.patterns.abstract_factory.HiFiSim{:name :sim2, :threads 2, :descr "High-fidelity sim"}
-  
-  
+
+  (defn simulate [answer fast slow opts]
+    (future (deliver answer (handle slow opts)))
+    (handle fast opts))
 )
 
 
