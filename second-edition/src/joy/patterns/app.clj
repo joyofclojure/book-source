@@ -16,6 +16,6 @@
   ;; Started a mock simulator.
   ;;=> #joy.patterns.mock.MockSim{:name :mock-sim}
 
-  (di/handle (initialize :mock-sim config) {:weight 1101010})
+  (di/handle (initialize :mock-sim config) {})
   ;;=> 42
 )
