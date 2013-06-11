@@ -44,9 +44,9 @@
       (start! sys)
       sys))
 
-  (build-system :lofi lofi)
+  (build-system :sim1 lofi)
   ;; Started a lofi simulator.
-  ;;=> #joy.patterns.abstract_factory.LowFiSim{:name :lofi, :descr "Low-fidelity sim"}  
+  ;;=> #joy.patterns.abstract_factory.LowFiSim{:name :sim1, :descr "Low-fidelity sim"}  
   
   (extend-type joy.patterns.abstract_factory.HiFiSim
     Sys
@@ -58,11 +58,11 @@
       (Thread/sleep 2000)
       (* (:weight msg) 3.1415926535897932384626M)))
 
-  (build-system :hifi hifi)
+  (build-system :sim2 hifi)
   ;; Started a lofi simulator.
-  ;;=> #joy.patterns.abstract_factory.HiFiSim{:name :hifi, :threads 2, :descr "High-fidelity sim"}
+  ;;=> #joy.patterns.abstract_factory.HiFiSim{:name :sim2, :threads 2, :descr "High-fidelity sim"}
   
-
+  
 )
 
 
