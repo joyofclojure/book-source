@@ -4,6 +4,10 @@
   (:require (clojure [zip :as zip]))
   (:import  (java.util.regex Pattern)))
 
+(defn feed->zipper [uri-str]
+  (->> (xml/parse uri-str)
+       zip/xml-zip))
+
 (defn normalize [feed]
   (if (= :feed (:tag (first feed)))
     feed
@@ -12,8 +16,8 @@
 (defmulti feed-children class)
 
 (defmethod feed-children String [uri-str]
-  (->> (xml/parse uri-str)
-       zip/xml-zip
+  (->> uri-str
+       feed->zipper
        normalize
        zip/children
        (filter (comp #{:item :entry} :tag))))
