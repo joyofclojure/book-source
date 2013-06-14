@@ -57,10 +57,7 @@
 (def agent-for-player
   (memoize
    (fn [player-name]
-     (let [a (agent [])]
-       (set-error-handler! a #(println "bad" %1 %2))
-       (set-error-mode! a :fail)
-       a))))
+     (agent []))))
 
 (defn feed [db event]
   (let [a (agent-for-player (:player event))]
@@ -115,6 +112,8 @@
   ;;     {:ability 19, :player "Ryan", :h 1, :avg 0.5, :ab 2}
   ;;     {:ability 26, :player "Matt", :h 0, :avg 0.0, :ab 2}}
 
+  ;; Wait a few moments
+  
   (simulate 400 100 PLAYERS)
 
   ;;=> #{{:ability 26, :player "Matt", :h 95, :avg 0.2375, :ab 400}
@@ -125,5 +124,6 @@
   (es/effect-all {} @(agent-for-player "Nick"))
 
   ;;=> {:ab 402, :h 140, :avg 0.3482587064676617}
-  
+
+  ;; REHYDRATION!!
 ) 
