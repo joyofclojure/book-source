@@ -20,3 +20,14 @@
 )
 
 
+(defn rand-vec [& generators]
+  (into [] (map #(%) generators)))
+
+(comment
+
+  (rand-vec #(rand-sym 5 ascii)
+            #(rand-key 10 ascii)
+            #(rand-int 1024))
+
+)
+
