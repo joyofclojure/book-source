@@ -18,9 +18,7 @@
         h (if (= :hit (:result event))
             (inc h)
             h)
-        avg (if (zero? ab)
-              0.0
-              (double (/ h ab)))]
+        avg (double (/ h ab))]
     {:ab ab :h h :avg avg}))
 
 (comment
