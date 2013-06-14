@@ -10,3 +10,16 @@
 
 
 
+
+(defn rand-event [max ability]
+  (rand-map 1
+            #(-> :result)
+            #(if (< (rand-int max) ability)
+               :hit
+               :out)))
+
+(comment
+
+  (rand-event )
+
+)
