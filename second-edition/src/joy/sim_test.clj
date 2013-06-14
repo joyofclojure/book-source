@@ -8,18 +8,23 @@
                {:player "Matt", :ability 26}
                {:player "Ryan", :ability 19}})
 
-(defn update-stats [db event]
-  (let [player (first (sql/select #(= (:player event)
-                                      (:player %))
-                                  db))
-        less-db  (sql/difference db #{player})]
-    (conj less-db (merge player (es/effect player event)))))
+(defn lookup [db name]
+  (some #(when (= name (:player %)) %) db))
 
 (comment
 
-  (sql/select #(= "Nick" (:player %)) PLAYERS)
+  (lookup PLAYERS "Nick")
+  
+  ;;=> {:ability 32, :player "Nick"}
+  
+)
 
-  ;;=> #{{:ability 32, :player "Nick"}}
+(defn update-stats [db event]
+  (let [player    (lookup db (:player event))
+        less-db   (sql/difference db #{player})]
+    (conj less-db (merge player (es/effect player event)))))
+
+(comment
 
   (update-stats PLAYERS {:player "Nick", :result :hit})
 
@@ -53,6 +58,8 @@
    (take 100 (repeatedly #(rand-event 100 {:player "Nick", :ability 32}))))
 
 )
+
+;; Should I show the error modes flag? At least back ref to agents section
 
 (def agent-for-player
   (memoize
