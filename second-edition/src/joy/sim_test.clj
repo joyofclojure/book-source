@@ -34,7 +34,7 @@
 
 (defn rand-events [total max player]
   (take total
-        (repeatedly #(rand-event max player))))
+        (repeatedly #(assoc (rand-event max player) :player (:player player)))))
 
 (comment
 
@@ -51,6 +51,16 @@
   (memoize
    (fn [player-name]
      (agent nil))))
+
+(agent-for-player "Nick")
+
+(defn feed [event]
+  (send (agent-for-player (:player event))
+        (fn [state]
+          (dosync (alter db update-stats event))
+          state)))
+
+
 
 (defn simulate [db player events]
   (let []))
