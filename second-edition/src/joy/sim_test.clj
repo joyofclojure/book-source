@@ -17,11 +17,15 @@
 
 (comment
 
-  (sql/select #(= "Nick" (:player %)) @db)
+  (sql/select #(= "Nick" (:player %)) PLAYERS)
 
   ;;=> #{{:ability 32, :player "Nick"}}
 
-  (update-stats @db {:player "Nick", :result :hit})
+  (update-stats PLAYERS {:player "Nick", :result :hit})
+
+  ;;=> #{{:ability 19, :player "Ryan"}
+  ;;     {:ability 32, :player "Nick", :h 1, :avg 1.0, :ab 1}
+  ;;     {:ability 26, :player "Matt"}}
 
 )
 
@@ -38,7 +42,10 @@
 
 (comment
 
-  (rand-events 10 100 {:player "Nick", :ability 32})
+  (rand-events 3 100 {:player "Nick", :ability 32})
+
+  ;;=> ({:player "Nick", :result :out} {:player "Nick", :result :hit} {:player "Nick", :result :out})
+  
   
   (reduce
    #(+ %1 (if (= :hit (:result %2)) 1 0))
@@ -71,14 +78,22 @@
 
 (comment
 
-  (let [db (ref @db)]
+  (let [db (ref PLAYERS)]
     (feed-all db (rand-events 100 100 {:player "Nick", :ability 32}))
-    (await (agent-for-player "Nick"))
+;;    (await (agent-for-player "Nick"))  ;; NOTE not here, you might see diff count below
     db)
+
+  ;;=> #<Ref@321881a2: #{{:ability 19, :player "Ryan"}
+  ;;                     {:ability 26, :player "Matt"}
+  ;;                     {:ability 32, :player "Nick", :h 27, :avg 0.27, :ab 100}}
 
   (count @(agent-for-player "Nick"))
 
+  ;;=> 100
+
   (es/effect-all {} @(agent-for-player "Nick"))
+  ;;=> {:ab 100, :h 27, :avg 0.27}
+
 )
 
 (defn simulate [db player events]
