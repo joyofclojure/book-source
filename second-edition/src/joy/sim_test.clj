@@ -40,3 +40,7 @@
    (take 100 (repeatedly #(rand-event 100 {:player "Nick", :ability 32}))))
 
 )
+
+(defn simulate [db player events]
+  (let []))
+
