@@ -54,13 +54,23 @@
 
 (agent-for-player "Nick")
 
-(defn feed [event]
+(defn feed [db event]
   (send (agent-for-player (:player event))
         (fn [state]
           (dosync (alter db update-stats event))
           state)))
 
+(defn feed-all [db events]
+  (doseq [event events]
+    (feed db event))
+  db)
 
+
+(comment
+
+  (feed-all (ref @db) (rand-events 10 100 {:player "Nick", :ability 32}))
+
+)
 
 (defn simulate [db player events]
   (let []))
