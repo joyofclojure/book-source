@@ -1,4 +1,5 @@
-(ns joy.event-sourcing)
+(ns joy.event-sourcing
+  (:require [joy.generators :refer (rand-map)]))
 
 (defn valid? [event]
   (boolean (:result event)))
@@ -61,4 +62,17 @@
 
 )
 
+(def events (repeatedly 100
+                        (fn []
+                          (rand-map 1
+                                    #(-> :result)
+                                    #(if (< (rand-int 10) 3)
+                                       :hit
+                                       :out)))))
+
+(comment
+  (effect-all {} events)
+
+  ;;=> {:ab 100 :h 32 :avg 0.32}
+)
 
