@@ -33,7 +33,6 @@
             #(rand-key 10 ascii)
             #(rand-int 1024))
 
-
   (rand-map 3 #(rand-key 5 ascii) #(rand-int 100))
 )
 
