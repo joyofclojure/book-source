@@ -49,4 +49,16 @@
 
 (def effect-all #(reduce apply-effect %1 %2))
 
+(comment
+
+  (effect-all {:ab 0, :h 0}
+              [{:result :hit}
+               {:result :out}
+               {:result :hit}
+               {:result :out}])
+
+  ;;=> {:ab 4, :h 2, :avg 0.5}
+
+)
+
 
