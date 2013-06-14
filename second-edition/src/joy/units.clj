@@ -136,4 +136,23 @@
   ;;=> 3010.81
 
   (convert {:bit 1, :byte 8, :nibble [1/2 :byte]} [32 :nibble])
+  ;;=> 128N
+
+  (require '[clojure.edn :as edn])
+
+  (edn/read-string "#uuid \"dae78a90-d491-11e2-8b8b-0800200c9a66\"")
+  ;;=> #uuid "dae78a90-d491-11e2-8b8b-0800200c9a66"
+
+  (class #uuid "dae78a90-d491-11e2-8b8b-0800200c9a66")
+  ;;=> java.util.UUID
+
+  (edn/read-string "42")
+  ;;=> 42
+
+  (edn/read-string "{:a 42, \"b\" 36, [:c] 9}")
+  ;;=> {:a 42, "b" 36, [:c] 9}
+  
+  (edn/read-string "#unit/time [1 :min 30 :sec]")
+  ;; java.lang.RuntimeException: No reader function for tag unit/time
+  
 )
