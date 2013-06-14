@@ -97,16 +97,33 @@
 )
 
 (defn simulate [total max players]
-  (apply interleave
-         (for [player players]
-           (rand-events total max player))))
+  (let [events  (apply interleave
+                       (for [player players]
+                         (rand-events total max player)))
+        results (feed-all (ref PLAYERS) events)]
+    (apply await (map #(agent-for-player (:player %)) players))
+    @results))
 
 
 
 
 (comment
 
+  (simulate 2 100 PLAYERS)
+
+  ;;=> #{{:ability 32, :player "Nick", :h 2, :avg 1.0, :ab 2}
+  ;;     {:ability 19, :player "Ryan", :h 1, :avg 0.5, :ab 2}
+  ;;     {:ability 26, :player "Matt", :h 0, :avg 0.0, :ab 2}}
+
+  (simulate 400 100 PLAYERS)
+
+  ;;=> #{{:ability 26, :player "Matt", :h 95, :avg 0.2375, :ab 400}
+  ;;     {:ability 32, :player "Nick", :h 138, :avg 0.345, :ab 400}
+  ;;     {:ability 19, :player "Ryan", :h 66, :avg 0.165, :ab 400}}
+
+
+  (es/effect-all {} @(agent-for-player "Nick"))
+
+  ;;=> {:ab 402, :h 140, :avg 0.3482587064676617}
   
-
-)
-
+) 
