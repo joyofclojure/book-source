@@ -39,6 +39,10 @@
 
 (comment
 
+  (apply-effect {:ab 600 :h 180 :avg 0.3}
+                {:result :hit})
+
+  ;;=> {:ab 601, :h 181, :avg 0.3011647254575707}
 
 )
 
