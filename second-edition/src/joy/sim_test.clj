@@ -4,7 +4,9 @@
             [clojure.set :as set]))
 
 
-(def db (ref #{}))
+(def db (ref #{{:player "Nick", :ability 32}
+               {:player "Matt", :ability 26}
+               {:player "Ryan", :ability 19}}))
 
 
 
