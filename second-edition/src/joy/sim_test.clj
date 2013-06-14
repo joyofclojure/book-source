@@ -32,14 +32,25 @@
                :hit
                :out)))
 
+(defn rand-events [total max player]
+  (take total
+        (repeatedly #(rand-event max player))))
+
 (comment
 
+  (rand-events 10 100 {:player "Nick", :ability 32})
+  
   (reduce
    #(+ %1 (if (= :hit (:result %2)) 1 0))
    0
    (take 100 (repeatedly #(rand-event 100 {:player "Nick", :ability 32}))))
 
 )
+
+(def agent-for-player
+  (memoize
+   (fn [player-name]
+     (agent nil))))
 
 (defn simulate [db player events]
   (let []))
