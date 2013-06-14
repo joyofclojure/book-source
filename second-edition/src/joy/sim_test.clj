@@ -96,6 +96,17 @@
 
 )
 
-(defn simulate [db player events]
-  (let []))
+(defn simulate [total max players]
+  (apply interleave
+         (for [player players]
+           (rand-events total max player))))
+
+
+
+
+(comment
+
+  
+
+)
 
