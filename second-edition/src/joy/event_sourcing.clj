@@ -47,4 +47,6 @@
 )
 
 
+(def effect-all #(reduce apply-effect %1 %2))
+
 
