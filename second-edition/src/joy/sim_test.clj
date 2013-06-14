@@ -50,15 +50,18 @@
 (def agent-for-player
   (memoize
    (fn [player-name]
-     (agent nil))))
-
-(agent-for-player "Nick")
+     (let [a (agent [])]
+       (set-error-handler! a #(println "bad" %1 %2))
+       (set-error-mode! a :fail)
+       a))))
 
 (defn feed [db event]
-  (send (agent-for-player (:player event))
-        (fn [state]
-          (dosync (alter db update-stats event))
-          state)))
+  (let [a (agent-for-player (:player event))]
+    (println "Send to" a)
+    (send a
+          (fn [state]
+            (dosync (alter db update-stats event))
+            (conj state event)))))
 
 (defn feed-all [db events]
   (doseq [event events]
@@ -68,8 +71,14 @@
 
 (comment
 
-  (feed-all (ref @db) (rand-events 10 100 {:player "Nick", :ability 32}))
+  (let [db (ref @db)]
+    (feed-all db (rand-events 100 100 {:player "Nick", :ability 32}))
+    (await (agent-for-player "Nick"))
+    db)
 
+  (count @(agent-for-player "Nick"))
+
+  (es/effect-all {} @(agent-for-player "Nick"))
 )
 
 (defn simulate [db player events]
