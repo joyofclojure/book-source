@@ -76,3 +76,11 @@
   ;;=> {:ab 100 :h 32 :avg 0.32}
 )
 
+(def fx-timeline
+  #(reductions apply-effect %1 %2))
+
+(comment
+  (fx-timeline {} (take 3 events))
+
+)
+
