@@ -4,9 +4,9 @@
             [clojure.set :as sql]))
 
 
-(def db (ref #{{:player "Nick", :ability 32}
+(def PLAYERS #{{:player "Nick", :ability 32}
                {:player "Matt", :ability 26}
-               {:player "Ryan", :ability 19}}))
+               {:player "Ryan", :ability 19}})
 
 (defn update-stats [db event]
   (let [player (first (sql/select #(= (:player event)
