@@ -25,15 +25,18 @@
 
 )
 
-(defn rand-event [max ability]
+(defn rand-event [max player]
   (rand-map 1
             #(-> :result)
-            #(if (< (rand-int max) ability)
+            #(if (< (rand-int max) (:ability player))
                :hit
                :out)))
 
 (comment
 
-  (rand-event )
+  (reduce
+   #(+ %1 (if (= :hit (:result %2)) 1 0))
+   0
+   (take 100 (repeatedly #(rand-event 100 {:player "Nick", :ability 32}))))
 
 )
