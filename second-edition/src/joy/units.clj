@@ -155,4 +155,11 @@
   (edn/read-string "#unit/time [1 :min 30 :sec]")
   ;; java.lang.RuntimeException: No reader function for tag unit/time
   
+  (def T {'unit/time #'joy.units/time-reader})
+  
+  (edn/read-string {:readers T} "#unit/time [1 :min 30 :sec]")
+  ;;=> 90
+
+  (edn/read-string {:readers T, :default vector} "#what/the :huh?")
+  ;;=> [what/the :huh?]
 )
