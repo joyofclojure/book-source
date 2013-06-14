@@ -34,3 +34,15 @@
 
 )
 
+(defn apply-effect [state event]
+  (if (valid? event)
+    (effect state event)
+     state))
+
+(comment
+
+
+)
+
+
+
