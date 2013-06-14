@@ -23,3 +23,14 @@
               (double (/ h ab)))]
     {:ab ab :h h :avg avg}))
 
+(comment
+
+  (effect {} {:result :hit})
+  ;;=> {:ab 1 :h 1 :avg 1.0}
+
+  (effect {:ab 599 :h 180}
+          {:result :out})
+  ;;=> {:ab 600 :h 180 :avg 0.3}
+
+)
+
