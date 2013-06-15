@@ -98,7 +98,7 @@
   (let [events  (apply interleave
                        (for [player players]
                          (rand-events total max player)))
-        results (feed-all (ref PLAYERS) events)]
+        results (feed-all (ref players) events)]
     (apply await (map #(agent-for-player (:player %)) players))
     @results))
 
