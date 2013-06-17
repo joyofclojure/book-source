@@ -63,7 +63,9 @@
 (def agent-for-player
   (memoize
    (fn [player-name]
-     (agent []))))
+     (-> (agent [])
+         (set-error-handler! #(println "ERROR: " %1 %2))
+         (set-error-mode! :fail)))))
 
 (defn feed [db event]
   (let [a (agent-for-player (:player event))]
