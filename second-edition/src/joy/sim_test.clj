@@ -35,6 +35,9 @@
 
 )
 
+(defn commit-event [db event]
+  (dosync (alter db update-stats event)))
+
 (defn rand-event [{ability :ability}]
   (let [abil (numerator ability)
         max  (denominator ability)]
