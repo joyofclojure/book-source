@@ -3,7 +3,6 @@
             [joy.generators :refer (rand-map)]
             [clojure.set :as sql]))
 
-
 (def PLAYERS #{{:player "Nick", :ability 32/100}
                {:player "Matt", :ability 26/100}
                {:player "Ryan", :ability 19/100}})
@@ -68,7 +67,6 @@
 
 (defn feed [db event]
   (let [a (agent-for-player (:player event))]
-    (println "Send to" a)
     (send a
           (fn [state]
             (dosync (alter db update-stats event))
