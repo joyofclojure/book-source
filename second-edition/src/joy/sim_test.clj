@@ -80,7 +80,7 @@
   (let [a (agent-for-player (:player event))]
     (send a
           (fn [state]
-            (dosync (alter db update-stats event))
+            (commit-event db event)
             (conj state event)))))
 
 (defn feed-all [db events]
