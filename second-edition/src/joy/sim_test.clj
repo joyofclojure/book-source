@@ -38,6 +38,12 @@
 (defn commit-event [db event]
   (dosync (alter db update-stats event)))
 
+(comment
+  (commit-event (ref PLAYERS) {:player "Nick", :result :hit})
+
+  ;;=> #&lt;Ref@658ba666: #{...}&gt; 
+)
+
 (defn rand-event [{ability :ability}]
   (let [abil (numerator ability)
         max  (denominator ability)]
