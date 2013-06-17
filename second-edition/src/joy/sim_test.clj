@@ -9,7 +9,9 @@
                {:player "Ryan", :ability 19}})
 
 (defn lookup [db name]
-  (some #(when (= name (:player %)) %) db))
+  (first (sql/select
+           #(= name (:player %))
+           db)))
 
 (comment
 
