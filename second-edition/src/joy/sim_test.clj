@@ -4,9 +4,9 @@
             [clojure.set :as sql]))
 
 
-(def PLAYERS #{{:player "Nick", :ability 32}
-               {:player "Matt", :ability 26}
-               {:player "Ryan", :ability 19}})
+(def PLAYERS #{{:player "Nick", :ability 32/100}
+               {:player "Matt", :ability 26/100}
+               {:player "Ryan", :ability 19/100}})
 
 (defn lookup [db name]
   (first (sql/select
@@ -17,7 +17,7 @@
 
   (lookup PLAYERS "Nick")
   
-  ;;=> {:ability 32, :player "Nick"}
+  ;;=> {:ability 8/25, :player "Nick"}
   
 )
 
@@ -30,26 +30,30 @@
 
   (update-stats PLAYERS {:player "Nick", :result :hit})
 
-  ;;=> #{{:ability 19, :player "Ryan"}
-  ;;     {:ability 32, :player "Nick", :h 1, :avg 1.0, :ab 1}
-  ;;     {:ability 26, :player "Matt"}}
+  ;;=> #{{:ability 19/100, :player "Ryan"}
+  ;;     {:ability 8/25, :player "Nick", :h 1, :avg 1.0, :ab 1}
+  ;;     {:ability 13/50, :player "Matt"}}
 
 )
 
-(defn rand-event [max player]
-  (rand-map 1
-            #(-> :result)
-            #(if (< (rand-int max) (:ability player))
-               :hit
-               :out)))
+(defn rand-event [{ability :ability}]
+  (let [abil (numerator ability)
+        max  (denominator ability)]
+    (rand-map 1
+              #(-> :result)
+              #(if (< (rand-int max) abil)
+                 :hit
+                 :out))))
 
-(defn rand-events [total max player]
+(defn rand-events [total player]
   (take total
-        (repeatedly #(assoc (rand-event max player) :player (:player player)))))
+        (repeatedly #(assoc (rand-event player) 
+                            :player 
+                            (:player player)))))
 
 (comment
 
-  (rand-events 3 100 {:player "Nick", :ability 32})
+  (rand-events 3 {:player "Nick", :ability 32/100})
 
   ;;=> ({:player "Nick", :result :out} {:player "Nick", :result :hit} {:player "Nick", :result :out})
 
@@ -79,13 +83,13 @@
 (comment
 
   (let [db (ref PLAYERS)]
-    (feed-all db (rand-events 100 100 {:player "Nick", :ability 32}))
+    (feed-all db (rand-events 100 {:player "Nick", :ability 32/100}))
 ;;    (await (agent-for-player "Nick"))  ;; NOTE not here, you might see diff count below
     db)
 
-  ;;=> #<Ref@321881a2: #{{:ability 19, :player "Ryan"}
-  ;;                     {:ability 26, :player "Matt"}
-  ;;                     {:ability 32, :player "Nick", :h 27, :avg 0.27, :ab 100}}
+  ;;=> #<Ref@321881a2: #{{:ability 19/100, :player "Ryan"}
+  ;;                     {:ability 13/50,  :player "Matt"}
+  ;;                     {:ability 8/25,   :player "Nick", :h 27, :avg 0.27, :ab 100}}
 
   (count @(agent-for-player "Nick"))
 
@@ -96,10 +100,10 @@
 
 )
 
-(defn simulate [total max players]
+(defn simulate [total players]
   (let [events  (apply interleave
                        (for [player players]
-                         (rand-events total max player)))
+                         (rand-events total player)))
         results (feed-all (ref players) events)]
     (apply await (map #(agent-for-player (:player %)) players))
     @results))
@@ -109,19 +113,19 @@
 
 (comment
 
-  (simulate 2 100 PLAYERS)
+  (simulate 2 PLAYERS)
 
-  ;;=> #{{:ability 32, :player "Nick", :h 2, :avg 1.0, :ab 2}
-  ;;     {:ability 19, :player "Ryan", :h 1, :avg 0.5, :ab 2}
-  ;;     {:ability 26, :player "Matt", :h 0, :avg 0.0, :ab 2}}
+  ;;=> #{{:ability 8/25,   :player "Nick", :h 2, :avg 1.0, :ab 2}
+  ;;     {:ability 19/100, :player "Ryan", :h 1, :avg 0.5, :ab 2}
+  ;;     {:ability 13/50 , :player "Matt", :h 0, :avg 0.0, :ab 2}}
 
   ;; Wait a few moments
   
-  (simulate 400 100 PLAYERS)
+  (simulate 400 PLAYERS)
 
-  ;;=> #{{:ability 26, :player "Matt", :h 95, :avg 0.2375, :ab 400}
-  ;;     {:ability 32, :player "Nick", :h 138, :avg 0.345, :ab 400}
-  ;;     {:ability 19, :player "Ryan", :h 66, :avg 0.165, :ab 400}}
+  ;;=> #{{:ability 13/50,  :player "Matt", :h 95, :avg 0.2375, :ab 400}
+  ;;     {:ability 8/25,   :player "Nick", :h 138, :avg 0.345, :ab 400}
+  ;;     {:ability 19/100, :player "Ryan", :h 66, :avg 0.165, :ab 400}}
 
 
   (es/effect-all {} @(agent-for-player "Nick"))
