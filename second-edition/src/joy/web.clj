@@ -39,8 +39,17 @@
 
 
 (def echo-handler
-  (fn [exchange]
-    (let [headers (pickler (.getRequestHeaders exchange))]
-      (.add (.getResponseHeaders exchange)
-            "Content-Type" "application/edn")
+  (fn [_ exchange]
+    (let [headers (merge {} (.getRequestHeaders exchange))]
+      (println headers)
       (respond exchange (prn-str headers)))))
+
+(comment
+
+  (update-proxy p {"handle" (fn [this exchange] (respond exchange "foo"))})
+  
+  (update-proxy p {"handle" echo-handler})
+
+)
+
+
