@@ -3,13 +3,12 @@
             [clojure.string :as string])
   (:import [com.sun.net.httpserver HttpHandler HttpExchange HttpServer]
            [java.net InetSocketAddress HttpURLConnection]
-           [java.net URLDecoder]))
+           [java.net URLDecoder URI]))
     
 (defn respond [exchange body]
   (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
-  (doto (.getResponseBody exchange)
-    (.write (.getBytes body))
-    (.close)))
+  (with-open [response (.getResponseBody exchange)]
+    (.write response (.getBytes body))))
 
 
 (defn default-handler [txt]
@@ -35,42 +34,82 @@
 )
 
 
+(comment
+
+  (update-proxy p {"handle" (fn [this exchange] (respond exchange "foo"))})
+
+)
+
 (def echo-handler
   (fn [_ exchange]
-    (let [headers (merge {} (.getRequestHeaders exchange))]
-      (println headers)
+    (let [headers (.getRequestHeaders exchange)]
       (respond exchange (prn-str headers)))))
 
 (comment
 
-  (update-proxy p {"handle" (fn [this exchange] (respond exchange "foo"))})
-  
   (update-proxy p {"handle" echo-handler})
-
+  
 )
 
 (defn listing [file]
   (-> file .list sort))
 
+(comment
+
+  (listing (io/file "."))
+
+  ;;=> (".gitignore" "README.md" "project.clj" "src" "target" "test")
+
+)
+
 (defn html [root things]
   (string/join
-   (concat
-    ["<html><body>"]
-    (for [file things]
-      (str "<a href='"
-           (str root (if (= "/" root) "" File/separator) file)
-           "'>"
-           file "</a><br>"))
-    ["</body></html>"])))
+   (for [file things]
+     (str "<a href='"
+          (str root (if (= "/" root) "" File/separator) file)
+          "'>"
+          file "</a><br>"))))
+
+(comment
+
+  (html "." (listing (io/file ".")))
+
+  ;;=> "<a href='./.gitignore'>.gitignore</a><br><a href='./README.md'>README.md</a><br>
+  ;; <a href='./project.clj'>project.clj</a><br><a href='./src'>src</a><br>
+  ;; <a href='./target'>target</a><br><a href='./test'>test</a><br>"
+)
 
 (defn details [file]
   (str (.getName file) " is "
        (.length file)  " bytes."))
 
+(comment
+
+  (details (io/file "./README.md"))
+
+  ;;=> "README.md is 330 bytes."
+  
+)
+
+(defn uri->file [root uri]
+  (->> uri
+       str
+       URLDecoder/decode
+       (str root)
+       io/file))
+
+(comment
+
+  (uri->file "." (URI. "/project.clj"))
+  
+  ;;=> #<File ./project.clj>
+
+)
+
 (def fs-handler
   (fn [_ exchange]
-    (let [uri  (URLDecoder/decode (str (.getRequestURI exchange)))
-          file (io/file (str "." uri))]
+    (let [uri  (.getRequestURI exchange)
+          file (uri->file "." uri)]
       (if (.isDirectory file)
         (do (.add (.getResponseHeaders exchange)
                   "Content-Type" "text/html")
