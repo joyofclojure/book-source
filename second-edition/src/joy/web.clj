@@ -52,4 +52,32 @@
 
 )
 
+(defn listing [file]
+  (-> file .list sort))
 
+(defn html
+  [root things]
+  (apply str
+         (concat
+          ["<html><head></head><body>"]
+          (for [f things]
+            (str "<a href='"
+                 (str root (if (= "/" root) "" File/separator) f)
+                 "'>"
+                 f "</a><br>"))
+          ["</body></html>"])))
+
+(def fs-handler
+  (fn [_ exchange]
+    (let [uri (URLDecoder/decode (str (.getRequestURI exchange)))
+          f (File. (str "." uri))
+          filenames (listing f)]
+      (if (.isDirectory f)
+        (do (.add (.getResponseHeaders exchange)
+                  "Content-Type"
+                  (get mime-types "html"))
+            (respond exchange (html uri filenames)))
+        (try
+          (serve exchange f)
+          (catch Exception e
+            (println (.getMessage e))))))))
