@@ -29,6 +29,15 @@
     (.start)))
 
 
+(comment
+  (def server (new-server 8123 "/joy/hello" (default-handler "Hello Cleveland")))
+
+  (.stop server 0)
+  (def p (default-handler "There's no problem that can't be solved with another level of indirection"))
+  (def server (new-server 8123 "/joy/hello" p))
+)
+
+
 (defn echo-handler [pickler]
   (proxy [HttpHandler] []
     (handle [exchange]
