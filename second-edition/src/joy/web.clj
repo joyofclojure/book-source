@@ -1,11 +1,8 @@
 (ns joy.web
-  (:require [clojure.java.io :as io])
-  (:import [java.io File]
-           [com.sun.net.httpserver HttpHandler
-            HttpExchange HttpServer]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string])
+  (:import [com.sun.net.httpserver HttpHandler HttpExchange HttpServer]
            [java.net InetSocketAddress HttpURLConnection]
-           [java.io IOException FilterOutputStream
-            BufferedInputStream FileInputStream]
            [java.net URLDecoder]))
     
 (defn respond [exchange body]
@@ -55,22 +52,21 @@
 (defn listing [file]
   (-> file .list sort))
 
-(defn html
-  [root things]
-  (apply str
-         (concat
-          ["<html><head></head><body>"]
-          (for [f things]
-            (str "<a href='"
-                 (str root (if (= "/" root) "" File/separator) f)
-                 "'>"
-                 f "</a><br>"))
-          ["</body></html>"])))
+(defn html [root things]
+  (string/join
+   (concat
+    ["<html><body>"]
+    (for [f things]
+      (str "<a href='"
+           (str root (if (= "/" root) "" File/separator) f)
+           "'>"
+           f "</a><br>"))
+    ["</body></html>"])))
 
 (def fs-handler
   (fn [_ exchange]
     (let [uri (URLDecoder/decode (str (.getRequestURI exchange)))
-          f (File. (str "." uri))
+          f (io/file (str "." uri))
           filenames (listing f)]
       (if (.isDirectory f)
         (do (.add (.getResponseHeaders exchange)
