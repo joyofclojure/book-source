@@ -107,11 +107,14 @@
        io/file))
 
 (comment
-
+  
   (uri->file "." (URI. "/project.clj"))
 
   ;;=> #<File ./project.clj>
 
+  (details (uri->file "." (URI. "/project.clj")))
+
+  ;;=> "project.clj is 289 bytes."
 )
 
 (defn html-around [o]
