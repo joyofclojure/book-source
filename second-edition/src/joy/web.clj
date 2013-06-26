@@ -2,16 +2,20 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string])
   (:import [com.sun.net.httpserver HttpHandler HttpExchange HttpServer]
-           [java.net InetSocketAddress HttpURLConnection]
-           [java.net URLDecoder URI]))
+           [java.net InetSocketAddress URLDecoder URI]
+           [java.io File FilterOutputStream]))
+
+
+(def OK java.net.HttpURLConnection/HTTP_OK)
+
 
 (defn respond
   ([exchange body]
-    (respond identity exchange body)
-  ([flter exchange body]
-    (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
-    (with-open [response (.getResponseBody exchange)]
-      (.write response (.getBytes body)))))
+    (respond identity exchange body))
+  ([around exchange body]
+    (.sendResponseHeaders exchange OK 0)
+    (with-open [resp (around (.getResponseBody exchange))]
+      (.write resp (.getBytes body)))))
 
 
 (defn default-handler [txt]
@@ -32,14 +36,14 @@
   (def server (new-server 8123 "/joy/hello" (default-handler "Hello Cleveland")))
   (.stop server 0)
 
-  (def p (default-handler "There's no problem that can't be solved with another level of indirection"))
+  (def p (default-handler "There's no problem that can't be solved with another level of indirection."))
   (def server (new-server 8123 "/" p))
 )
 
 
 (comment
 
-  (update-proxy p {"handle" (fn [this exchange] (respond exchange "foo"))})
+  (update-proxy p {"handle" (fn [this exchange] (respond exchange (str "this is " this)))})
 
 )
 
@@ -109,6 +113,14 @@
 
 )
 
+(defn html-around [o]
+  (proxy [FilterOutputStream] [o]
+    (write [b]
+      (proxy-super write
+        (.getBytes (str "<html><body>"
+                        (String. b)
+                        "</body></html>"))))))
+
 (def fs-handler
   (fn [_ exchange]
     (let [uri  (.getRequestURI exchange)
@@ -116,7 +128,9 @@
       (if (.isDirectory file)
         (do (.add (.getResponseHeaders exchange)
                   "Content-Type" "text/html")
-            (respond exchange (html uri (listing file))))
+            (respond html-around
+                     exchange
+                     (html (str uri) (listing file))))
         (respond exchange (details file))))))
 
 (comment
