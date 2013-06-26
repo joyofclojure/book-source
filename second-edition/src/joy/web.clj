@@ -55,6 +55,8 @@
 
   (update-proxy p {"handle" echo-handler})
 
+  '{"Cache-control" ("max-age=0"), "Host" ("localhost:8123"), "Accept-charset" ("ISO-8859-1,utf-8;q=0.7,*;q=0.3"), "Accept-encoding" ("gzip,deflate,sdch"), "Connection" ("keep-alive"), "Accept-language" ("en-US,en;q=0.8"), "User-agent" ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31"), "Accept" ("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")}
+
 )
 
 (defn listing [file]
