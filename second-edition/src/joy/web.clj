@@ -38,10 +38,9 @@
 )
 
 
-(defn echo-handler [pickler]
-  (proxy [HttpHandler] []
-    (handle [exchange]
-      (let [headers (pickler (.getRequestHeaders exchange))]
-        (.add (.getResponseHeaders exchange)
-              "Content-Type" "application/edn")
-        (respond exchange (prn-str headers))))))
+(def echo-handler
+  (fn [exchange]
+    (let [headers (pickler (.getRequestHeaders exchange))]
+      (.add (.getResponseHeaders exchange)
+            "Content-Type" "application/edn")
+      (respond exchange (prn-str headers)))))
