@@ -66,12 +66,11 @@
 (def fs-handler
   (fn [_ exchange]
     (let [uri (URLDecoder/decode (str (.getRequestURI exchange)))
-          f (io/file (str "." uri))
-          filenames (listing f)]
+          f (io/file (str "." uri))]
       (if (.isDirectory f)
         (do (.add (.getResponseHeaders exchange)
                   "Content-Type" "text/html")
-            (respond exchange (html uri filenames)))
+            (respond exchange (html uri (listing f))))
         (respond exchange "A file")))))
 
 (comment
