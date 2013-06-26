@@ -116,10 +116,10 @@
 
 (defn html-around [o]
   (proxy [FilterOutputStream] [o]
-    (write [b]
+    (write [raw-bytes]
       (proxy-super write
         (.getBytes (str "<html><body>"
-                        (String. b)
+                        (String. raw-bytes)
                         "</body></html>"))))))
 
 (def fs-handler
