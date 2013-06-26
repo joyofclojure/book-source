@@ -56,22 +56,26 @@
   (string/join
    (concat
     ["<html><body>"]
-    (for [f things]
+    (for [file things]
       (str "<a href='"
-           (str root (if (= "/" root) "" File/separator) f)
+           (str root (if (= "/" root) "" File/separator) file)
            "'>"
-           f "</a><br>"))
+           file "</a><br>"))
     ["</body></html>"])))
+
+(defn details [file]
+  (str (.getName file) " is "
+       (.length file)  " bytes."))
 
 (def fs-handler
   (fn [_ exchange]
-    (let [uri (URLDecoder/decode (str (.getRequestURI exchange)))
-          f (io/file (str "." uri))]
-      (if (.isDirectory f)
+    (let [uri  (URLDecoder/decode (str (.getRequestURI exchange)))
+          file (io/file (str "." uri))]
+      (if (.isDirectory file)
         (do (.add (.getResponseHeaders exchange)
                   "Content-Type" "text/html")
-            (respond exchange (html uri (listing f))))
-        (respond exchange "A file")))))
+            (respond exchange (html uri (listing file))))
+        (respond exchange (details file))))))
 
 (comment
 
