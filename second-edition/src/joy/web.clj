@@ -74,10 +74,6 @@
           filenames (listing f)]
       (if (.isDirectory f)
         (do (.add (.getResponseHeaders exchange)
-                  "Content-Type"
-                  (get mime-types "html"))
+                  "Content-Type" "text/html")
             (respond exchange (html uri filenames)))
-        (try
-          (serve exchange f)
-          (catch Exception e
-            (println (.getMessage e))))))))
+        (respond exchange "A file")))))
