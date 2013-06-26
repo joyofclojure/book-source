@@ -34,7 +34,7 @@
   (.stop server 0)
   
   (def p (default-handler "There's no problem that can't be solved with another level of indirection"))
-  (def server (new-server 8123 "/joy/hello" p))
+  (def server (new-server 8123 "/" p))
 )
 
 
@@ -77,3 +77,9 @@
                   "Content-Type" "text/html")
             (respond exchange (html uri filenames)))
         (respond exchange "A file")))))
+
+(comment
+
+  (update-proxy p {"handle" fs-handler})
+
+)
