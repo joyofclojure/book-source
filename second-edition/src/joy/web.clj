@@ -4,11 +4,14 @@
   (:import [com.sun.net.httpserver HttpHandler HttpExchange HttpServer]
            [java.net InetSocketAddress HttpURLConnection]
            [java.net URLDecoder URI]))
-    
-(defn respond [exchange body]
-  (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
-  (with-open [response (.getResponseBody exchange)]
-    (.write response (.getBytes body))))
+
+(defn respond
+  ([exchange body]
+    (respond identity exchange body)
+  ([flter exchange body]
+    (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
+    (with-open [response (.getResponseBody exchange)]
+      (.write response (.getBytes body)))))
 
 
 (defn default-handler [txt]
@@ -28,7 +31,7 @@
 (comment
   (def server (new-server 8123 "/joy/hello" (default-handler "Hello Cleveland")))
   (.stop server 0)
-  
+
   (def p (default-handler "There's no problem that can't be solved with another level of indirection"))
   (def server (new-server 8123 "/" p))
 )
@@ -48,7 +51,7 @@
 (comment
 
   (update-proxy p {"handle" echo-handler})
-  
+
 )
 
 (defn listing [file]
@@ -88,7 +91,7 @@
   (details (io/file "./README.md"))
 
   ;;=> "README.md is 330 bytes."
-  
+
 )
 
 (defn uri->file [root uri]
@@ -101,7 +104,7 @@
 (comment
 
   (uri->file "." (URI. "/project.clj"))
-  
+
   ;;=> #<File ./project.clj>
 
 )
