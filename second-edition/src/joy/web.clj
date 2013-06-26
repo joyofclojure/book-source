@@ -17,3 +17,11 @@
         (respond exchange (prn-str headers))))))
 
 
+(defn new-server
+  [port path handler]
+  (doto (HttpServer/create (InetSocketAddress. port) 0)
+    (.createContext path handler)
+    (.setExecutor nil)
+    (.start)))
+
+
