@@ -8,13 +8,17 @@
             BufferedInputStream FileInputStream]
            [java.net URLDecoder]))
     
-(defn echo-handler [pickler]
+(defn respond [exchange body]
+  (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
+  (doto (.getResponseBody exchange)
+    (.write (.getBytes body))
+    (.close)))
+
+
+(defn default-handler [txt]
   (proxy [HttpHandler] []
     (handle [exchange]
-      (let [headers (pickler (.getRequestHeaders exchange))]
-        (.add (.getResponseHeaders exchange)
-              "Content-Type" "application/edn")
-        (respond exchange (prn-str headers))))))
+      (respond exchange txt))))
 
 
 (defn new-server
@@ -25,3 +29,10 @@
     (.start)))
 
 
+(defn echo-handler [pickler]
+  (proxy [HttpHandler] []
+    (handle [exchange]
+      (let [headers (pickler (.getRequestHeaders exchange))]
+        (.add (.getResponseHeaders exchange)
+              "Content-Type" "application/edn")
+        (respond exchange (prn-str headers))))))
