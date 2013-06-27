@@ -2,16 +2,19 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string])
   (:import [com.sun.net.httpserver HttpHandler HttpExchange HttpServer]
-           [java.net InetSocketAddress HttpURLConnection]
-           [java.net URLDecoder URI]))
+           [java.net InetSocketAddress URLDecoder URI]
+           [java.io File FilterOutputStream]))
+
+(def OK java.net.HttpURLConnection/HTTP_OK)
+
 
 (defn respond
   ([exchange body]
     (respond identity exchange body))
   ([around exchange body]
-    (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
-    (with-open [response (around (.getResponseBody exchange))]
-      (.write response (.getBytes body)))))
+    (.sendResponseHeaders exchange OK 0)
+    (with-open [resp (around (.getResponseBody exchange))]
+      (.write resp (.getBytes body)))))
 
 
 (defn default-handler [txt]
@@ -32,14 +35,14 @@
   (def server (new-server 8123 "/joy/hello" (default-handler "Hello Cleveland")))
   (.stop server 0)
 
-  (def p (default-handler "There's no problem that can't be solved with another level of indirection"))
+  (def p (default-handler "There's no problem that can't be solved with another level of indirection."))
   (def server (new-server 8123 "/" p))
 )
 
 
 (comment
 
-  (update-proxy p {"handle" (fn [this exchange] (respond exchange "foo"))})
+  (update-proxy p {"handle" (fn [this exchange] (respond exchange (str "this is " this)))})
 
 )
 
@@ -51,6 +54,8 @@
 (comment
 
   (update-proxy p {"handle" echo-handler})
+
+  '{"Cache-control" ("max-age=0"), "Host" ("localhost:8123"), "Accept-charset" ("ISO-8859-1,utf-8;q=0.7,*;q=0.3"), "Accept-encoding" ("gzip,deflate,sdch"), "Connection" ("keep-alive"), "Accept-language" ("en-US,en;q=0.8"), "User-agent" ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31"), "Accept" ("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")}
 
 )
 
@@ -109,6 +114,14 @@
 
 )
 
+(defn html-around [o]
+  (proxy [FilterOutputStream] [o]
+    (write [raw-bytes]
+      (proxy-super write
+        (.getBytes (str "<html><body>"
+                        (String. raw-bytes)
+                        "</body></html>"))))))
+
 (def fs-handler
   (fn [_ exchange]
     (let [uri  (.getRequestURI exchange)
@@ -116,7 +129,9 @@
       (if (.isDirectory file)
         (do (.add (.getResponseHeaders exchange)
                   "Content-Type" "text/html")
-            (respond exchange (html uri (listing file))))
+            (respond html-around
+                     exchange
+                     (html (str uri) (listing file))))
         (respond exchange (details file))))))
 
 (comment
