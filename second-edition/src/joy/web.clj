@@ -7,10 +7,10 @@
 
 (defn respond
   ([exchange body]
-    (respond identity exchange body)
-  ([flter exchange body]
+    (respond identity exchange body))
+  ([around exchange body]
     (.sendResponseHeaders exchange HttpURLConnection/HTTP_OK 0)
-    (with-open [response (.getResponseBody exchange)]
+    (with-open [response (around (.getResponseBody exchange))]
       (.write response (.getBytes body)))))
 
 
