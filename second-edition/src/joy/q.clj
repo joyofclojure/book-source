@@ -27,6 +27,10 @@
 
   (rand-ints 10)
 
-  
+  (qsort [2 1 4 3])
+  ;;=> (1 2 3 4)
 
+  (qsort (rand-ints 20))
+
+  (take 10 (qsort (rand-ints 10000)))
 )
