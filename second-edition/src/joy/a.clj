@@ -24,6 +24,13 @@
   (+ node-cost
      (or (:cost cheapest-nbr) 0)))
 
+(comment
+
+  (path-cost 900 {:cost 1})
+  ;;=> 901
+  
+)
+
 (defn total-cost [newcost step-cost-est size y x]
   (+ newcost 
      (estimate-cost step-cost-est size y x)))
