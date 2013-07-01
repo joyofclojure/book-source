@@ -28,7 +28,16 @@
 (defmacro unless [condition & body]
   `(if (not ~condition) ;; #1_unless: Unquote condition
      (do ~@body)))      ;; #2_unless: Splice body
-   
+
+(comment
+
+  (unless true (println :nope))
+
+  (unless false (println :yep))
+
+)
+
+
 (defn from-end [s n] ;; #3_unless: Use our unless
   (let [delta (dec (- (count s) n))]
     (unless (neg? delta) ;; #4_unless: Return nil if negative
