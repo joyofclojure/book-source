@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Web Audio with ClojureScript</title>
+  </head>
+  <body>
+    <button onclick="jsa.go()">Play</button>
+<a href="src/main.cljs">[Source code]</a>
+<style>
+  @font-face
+  {
+    font-family: FreeSerifWeb;
+    src: url('FreeSerif.ttf');
+  }
+
+  .staff {
+    position: absolute;
+    top: 100px;
+    width: 99%;
+  }
+  .staff hr {
+    height: 0px;
+    border: none;
+    border-top: 1px solid #000;
+    margin: 10px 0;
+  }
+  .note {
+    font-family: FreeSerif, FreeSerifWeb;
+    font-size: 65px;
+    position: absolute;
+    top: 95px;
+    -webkit-transition: all 0.3s;
+    -webkit-transform-origin: 12px 57px;
+  }
+  .sharp, .flat {
+    font-size: 30px;
+    margin-top: -57px;
+    margin-left: -12px;
+  }
+  .flat {
+    margin-top: -63px;
+  }
+  .playing {
+    text-shadow: 0 0 10px #55f, 0 0 10px #55f;
+    -webkit-transform: rotate(15deg);
+  }
+  body {
+    background: #ddd;
+  }
+</style>
+
+<script src="prod-target/main.js"></script>
+</body>
+</html>
