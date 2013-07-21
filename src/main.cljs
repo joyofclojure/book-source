@@ -1,7 +1,5 @@
 (ns jsa)
 
-(def max-volume 0.4)
-
 ;; Set up prn and friends for debugging
 (let [buf (array)]
   (set! *print-fn*
@@ -13,33 +11,48 @@
               (.splice buf 0 (.-length buf) post))
             (.push buf s)))))
 
-(defn setup-context
-  "Set up an audio context needed for playing sounds."
-  []
-  (when-let [ctor (or (.-AudioContext js/window)
-                      (.-webkitAudioContext js/window))]
-    (let [audio-context (new ctor)
-          compressor (.createDynamicsCompressor audio-context)]
-      (.connect compressor (.-destination audio-context))
-      {:audio-context audio-context, :output compressor})))
+(defn soft-attack [ctx {:keys [volume delay duration]}]
+  (let [node (.createGainNode ctx)]    ;; createGain
+    (doto (.-gain node)
+      (.linearRampToValueAtTime 0 delay)
+      (.linearRampToValueAtTime volume (+ delay 0.05))
+      (.linearRampToValueAtTime 0 (+ delay duration)))
+    node))
+
+(defn sine-tone [ctx {:keys [cent delay duration]}]
+  (let [node (.createOscillator ctx)]
+    (set! (-> node .-frequency .-value) 440)
+    (set! (-> node .-detune .-value) (- cent 900))
+    (.noteOn node delay)
+    (.noteOff node (+ delay duration))
+    node))
+
+(defn connect-to [node1 node2]
+  (.connect node1 node2)
+  node2)
 
 (defn woo
   "Play a 'woo' sound; sounds a bit like a glass harp."
-  [context {:keys [cent delay duration]}]
-  (let [ctx (:audio-context context)
-        start (+ (.-currentTime ctx) delay)
-        gain (.createGainNode ctx)    ;; createGain
-        osc (.createOscillator ctx)]
-    (.connect gain (:output context))
-    (doto (.-gain gain)
-      (.linearRampToValueAtTime 0 (+ start 0))
-      (.linearRampToValueAtTime max-volume (+ start 0.05))
-      (.linearRampToValueAtTime 0 (+ start duration)))
-    (.connect osc gain)
-    (set! (-> osc .-frequency .-value) 440)
-    (set! (-> osc .-detune .-value) (- cent 900))
-    (.noteOn osc start)
-    (.noteOff osc (+ start duration))))
+  [ctx note]
+  (-> (sine-tone ctx note)
+      (connect-to (soft-attack ctx note))))
+
+(defn play!
+  "Kick off playing a sequence of notes. note-fn must take two
+  arguments, an AudioContext object and a map representing one note to
+  play. It must return an AudioNode object that will play that note."
+  [note-fn notes]
+  (if-let [ctor (or (.-AudioContext js/window)
+                      (.-webkitAudioContext js/window))]
+    (let [ctx (new ctor)
+          compressor (.createDynamicsCompressor ctx)] ;; for the safety of your speakers and ears
+      (let [now (.-currentTime ctx)]
+        (doseq [note notes]
+          (->
+           (note-fn ctx (update-in note [:delay] + now))
+           (connect-to compressor))))
+      (connect-to compressor (.-destination ctx)))
+    (js/alert "Sorry, this browser doesn't seem to support AudioContext")))
 
 (defn note-beats
   "Convert a sequence of numbers, pluses (for holds), and dashes (for
@@ -63,12 +76,6 @@
                     :delay (* (/ 60 bpm) (:delay-beats note))
                     :duration (* (/ 60 bpm) (+ 1.3 (:duration-beats note)))))
        notes))
-
-(defn play!
-  "Kick off playing a sequence of notes."
-  [ctx notes]
-  (doseq [note notes]
-    (woo ctx note)))
 
 (defn build-scale
   "Return a function that converts a scale note number (such as given
@@ -175,9 +182,9 @@
   [notes]
   (doseq [note notes]
     (js/setTimeout #(dset! (:span note) '[className] "note playing")
-                   (- (* 1000 (:delay note)) 200))
+                   (- (* 1000 (:delay note)) -200))
     (js/setTimeout #(dset! (:span note) '[className] "note")
-                   (- (* 1000 (+ (:delay note) (:duration note))) 200))))
+                   (- (* 1000 (+ (:delay note) (:duration note))) -200))))
 
 ;; == data ==
 (def chromatic (build-scale [1]))
@@ -218,14 +225,6 @@
 
 ;; == audio main ==
 
-;; A global audio context used for this demo page
-(def context (setup-context))
-
-(when-not context
-  (.write
-   js/document
-   "<h2>Sorry, this browser doesn't seem to support AudioContext</h2>"))
-
 #_(def notes
   (-> row-row-row
       (time-scale 300)
@@ -248,11 +247,41 @@
       (time-scale 300)
       (key-of :E)
       major
-      (transpose -6)
-      draw-all!))
+      (->> (map #(vector (:cent %) (:duration-beats %))))
+      prn
+      ;;(transpose -6)
+      ;;draw-all!
+      ))
+
+
+(defn pair-to-note [[tone duration]]
+  {:cent (* 100 tone)
+   :duration duration
+   :delay-beats 0
+   :volume 0.4})
+
+(defn consecutive-notes [notes]
+  (reductions (fn [{:keys [delay duration]} note]
+                (assoc note
+                  :delay (+ delay duration)))
+              notes))
+
+(def magical-theme
+  (concat
+   [[11 2] [16 3] [19 1] [18 2] [16 4] [23 2]]
+   [[21 6] [18 6] [16 3] [19 1] [18 2] [14 4] [17 2] [11 10]]
+   [[11 2] [16 3] [19 1] [18 2] [16 4] [23 2]]
+   [[26 4] [25 2] [24 4] [20 2] [24 3] [23 1] [22 2] [10 4] [19 2] [16 10]]))
+
+(def notes
+  (->> magical-theme
+       (map pair-to-note)
+       consecutive-notes
+       (map #(update-in % [:delay] / 6))
+       (map #(update-in % [:duration] / 6))))
 
 (defn ^:export go []
-  (play! context notes)
+  (play! woo notes)
   (animate! notes))
 
 ;; Uncomment to begin playing on page load
