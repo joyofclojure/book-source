@@ -70,7 +70,7 @@
 
 )
 
-(defn html [root things]
+(defn html-links [root things]
   (string/join
    (for [file things]
      (str "<a href='"
@@ -80,7 +80,7 @@
 
 (comment
 
-  (html "." (listing (io/file ".")))
+  (html-links "." (listing (io/file ".")))
 
   ;;=> "<a href='./.gitignore'>.gitignore</a><br><a href='./README.md'>README.md</a><br>
   ;; <a href='./project.clj'>project.clj</a><br><a href='./src'>src</a><br>
@@ -134,7 +134,7 @@
                   "Content-Type" "text/html")
             (respond html-around
                      exchange
-                     (html (str uri) (listing file))))
+                     (html-links (str uri) (listing file))))
         (respond exchange (details file))))))
 
 (comment
