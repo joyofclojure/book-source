@@ -82,11 +82,13 @@
 (defn notes [tone-pairs]
   "Returns a sequence of note maps at moderate tempo for the given
   sequence of tone-pairs."
-  (->> tone-pairs
-       (map pair-to-note)
-       consecutive-notes
-       (map #(update-in % [:delay] / 6))
-       (map #(update-in % [:duration] / 6))))
+  (let [bpm 360
+        bps (/ bpm 60)]
+    (->> tone-pairs
+         (map pair-to-note)
+         consecutive-notes
+         (map #(update-in % [:delay] / bps))
+         (map #(update-in % [:duration] / bps)))))
 
 (def magical-theme
   "A sequence of [tone duration] pairs for a magical theme"
