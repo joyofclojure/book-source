@@ -68,7 +68,6 @@
   [[tone duration]]
   {:cent (* 100 tone)
    :duration duration
-   :delay-beats 0
    :volume 0.4})
 
 (defn consecutive-notes
