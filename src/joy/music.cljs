@@ -33,8 +33,10 @@
 (defn woo
   "Play a 'woo' sound; sounds a bit like a glass harp."
   [ctx note]
-  (-> (sine-tone ctx note)
-      (connect-to (soft-attack ctx note))))
+  (let [linger 1.5
+        note (update-in note [:duration] * linger)]
+    (-> (sine-tone ctx note)
+        (connect-to (soft-attack ctx note)))))
 
 (defn play!
   "Kick off playing a sequence of notes. note-fn must take two
