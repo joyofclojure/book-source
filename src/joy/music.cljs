@@ -55,6 +55,12 @@
       (connect-to compressor (.-destination ctx)))
     (js/alert "Sorry, this browser doesn't seem to support AudioContext")))
 
+#_(play! woo [{:cent 1100, :duration 1, :delay 0, :volume 0.4}])
+
+#_(play! woo [{:cent 1100, :duration 1, :delay 0.0, :volume 0.4}
+              {:cent 1400, :duration 1, :delay 0.2, :volume 0.4}
+              {:cent 1800, :duration 1, :delay 0.4, :volume 0.4}])
+
 ;; === compute music ===
 
 (defn pair-to-note
