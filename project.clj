@@ -5,12 +5,12 @@
   :plugins [[lein-cljsbuild "0.3.2"]]
   :cljsbuild
   {:builds
-   [{:source-paths ["src"]
+   [{:source-paths ["src/cljs"]
      :compiler
      {:output-to "dev-target/all.js"
       :optimizations :whitespace
       :pretty-print true}}
-    {:source-paths ["src"]
+    {:source-paths ["src/cljs"]
      :compiler
      {:output-to "prod-target/all.js"
       :optimizations :advanced
