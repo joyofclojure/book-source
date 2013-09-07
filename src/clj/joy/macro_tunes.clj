@@ -1,5 +1,5 @@
 (ns joy.macro-tunes
-  "Functions for computing tunes full of notes")
+  "Functions for computing tunes full of notes at compile time")
 
 (defn pair-to-note
   "Return a note map for the given tone and duration"
@@ -29,13 +29,15 @@
          (map #(update-in % [:delay] (comp double /) bps))
          (map #(update-in % [:duration] (comp double /) bps)))))
 
-(defmacro magical-theme
+(defn magical-theme
   "A sequence of notes for a magical theme"
   []
-  (vec
-   (notes
-    (concat
-     [[11 2] [16 3] [19 1] [18 2] [16 4] [23 2]]
-     [[21 6] [18 6] [16 3] [19 1] [18 2] [14 4] [17 2] [11 10]]
-     [[11 2] [16 3] [19 1] [18 2] [16 4] [23 2]]
-     [[26 4] [25 2] [24 4] [20 2] [24 3] [23 1] [22 2] [10 4] [19 2] [16 10]]))))
+  (notes
+   (concat
+    [[11 2] [16 3] [19 1] [18 2] [16 4] [23 2]]
+    [[21 6] [18 6] [16 3] [19 1] [18 2] [14 4] [17 2] [11 10]]
+    [[11 2] [16 3] [19 1] [18 2] [16 4] [23 2]]
+    [[26 4] [25 2] [24 4] [20 2] [24 3] [23 1] [22 2] [10 4] [19 2] [16 10]])))
+
+(defmacro magical-theme-macro []
+  (vec (magical-theme)))
