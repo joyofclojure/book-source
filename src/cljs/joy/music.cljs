@@ -1,6 +1,7 @@
 (ns joy.music
   "Functions for interoperating with the Web Audio API"
-  (:require [joy.tunes :as tunes]))
+  (:require [joy.tunes :as tunes])
+  (:require-macros [joy.macro-tunes :as mtunes]))
 
 (defn soft-attack
   "Return a gain node that goes from silent at time <delay> up to
@@ -61,9 +62,12 @@
               {:cent 1400, :duration 1, :delay 0.2, :volume 0.4}
               {:cent 1800, :duration 1, :delay 0.4, :volume 0.4}])
 
-
 (defn ^:export go []
-  (play! woo tunes/magical-theme))
+  (play! woo (tunes/magical-theme)))
+
+;; Uncomment to use macro version of tunes
+;; (defn ^:export go []
+;;   (play! woo (mtunes/magical-theme)))
 
 ;; Uncomment to begin playing on page load
 ;; (go)
