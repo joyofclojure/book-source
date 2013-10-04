@@ -7,5 +7,5 @@
                  [org.clojure/clojurescript "0.0-1835"]
                  [org.clojure/core.unify "0.5.3"]
                  [org.clojure/core.logic "0.8.0"]]
-  :source-paths ["src","src/clj"]
+  :source-paths ["src/clj"]
   :aot [joy.gui.DynaFrame])
