@@ -8,7 +8,7 @@
                  [org.clojure/core.unify "0.5.3"]
                  [org.clojure/core.logic "0.8.0"]]
   :source-paths ["src/clj"]
-  :aot [joy.gui.DynaFrame])
+  :aot [joy.gui.DynaFrame]
   :plugins [[lein-cljsbuild "0.3.2"]]
   :cljsbuild
   {:builds
