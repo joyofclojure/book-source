@@ -72,7 +72,7 @@
    :volume 0.4})
 
 (defn consecutive-notes
-  "Take a sequences of note maps that have no :delay, and return them
+  "Take a sequence of note maps that have no :delay, and return them
   with correct :delay's so that they will play in the order given."
   [notes]
   (reductions (fn [{:keys [delay duration]} note]
