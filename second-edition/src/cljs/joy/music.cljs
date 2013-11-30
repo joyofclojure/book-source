@@ -39,6 +39,8 @@
     (-> (sine-tone ctx note)
         (connect-to (soft-attack ctx note)))))
 
+(def make-once (memoize (fn [ctor] (new ctor))))
+
 (defn play!
   "Kick off playing a sequence of notes. note-fn must take two
   arguments, an AudioContext object and a map representing one note to
@@ -46,7 +48,7 @@
   [note-fn notes]
   (if-let [ctor (or (.-AudioContext js/window)
                       (.-webkitAudioContext js/window))]
-    (let [ctx (new ctor)
+    (let [ctx (make-once ctor)
           compressor (.createDynamicsCompressor ctx)] ;; for the safety of your speakers and ears
       (let [now (.-currentTime ctx)]
         (doseq [note notes]
