@@ -7,6 +7,6 @@ The source code is explorable via [Leiningen][l] or [Light Table][lt].
 
 ## License
 
-Copyright © 2013 Fogus and Houser
+Copyright © 2014 Fogus and Houser
 
 Distributed under the Eclipse Public License, the same as Clojure.
