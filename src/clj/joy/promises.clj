@@ -47,8 +47,8 @@
 (def count-items (cps->fn tweet-items count))
 
 (comment
-  (count-items "https://api.twitter.com/1/statuses/user_timeline.rss?user_id=46130870")
-  ;=> 20
+  (count-items "https://blog.fogus.me/feed/")
+  ;=> 5
   )
 
 ;; philosophers
