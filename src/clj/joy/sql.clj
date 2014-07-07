@@ -13,7 +13,7 @@
 (comment
 
   (shuffle-expr 42)
-  
+
   (shuffle-expr '(= X.a Y.b))
 
   (shuffle-expr '(AND (< a 5) (< b ~max)))
@@ -43,7 +43,7 @@
 
 (comment
   (apply process-left-join-clause shuffle-expr '(Y :ON (= X.a Y.b)))
-  
+
   ;;=> " LEFT JOIN Y ON (X.a = Y.b)"
 
   (let [LEFT-JOIN (partial process-left-join-clause shuffle-expr)]
@@ -80,16 +80,16 @@
   ;;=> "SELECT a, b, c FROM X LEFT JOIN Y ON (X.a = Y.b) WHERE ((a < 5) AND (b < ?))"
 )
 
-(declare apply-syntax)
+(declare ^:dynamic *clause-map*)
+
+(defn apply-syntax [[op & args]]
+  (apply (get *clause-map* op) args))
 
 (def ^:dynamic *clause-map*
   {'SELECT    (partial process-select-clause apply-syntax)
    'FROM      (partial process-from-clause apply-syntax)
    'LEFT-JOIN (partial process-left-join-clause shuffle-expr)
    'WHERE     (partial process-where-clause shuffle-expr)})
-
-(defn apply-syntax [[op & args]]
-  (apply (get *clause-map* op) args))
 
 (defmacro SELECT [& args]
   {:query (apply-syntax (cons 'SELECT args))
@@ -105,8 +105,8 @@
 
 (comment
   (query 9)
-  
+
   ;;=> {:query "SELECT a, b, c FROM X LEFT JOIN Y ON (X.a = Y.b) WHERE ((a < 5) AND (b < ?))"
   ;;    :bindings [9]}
-  
+
 )
