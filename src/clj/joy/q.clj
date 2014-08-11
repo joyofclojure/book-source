@@ -13,7 +13,7 @@
          (recur (list*
                  (filter smaller? xs)       ;; #: Work all < pivot
                  pivot                      ;; #: Work pivot itself
-                 (remove smaller? xs)       ;; #: Work all > pivot
+                 (remove smaller? xs)       ;; #: Work all >= pivot
                  parts)))                   ;; #: cancat parts
        (when-let [[x & parts] parts]
          (cons x (sort-parts parts))))))) ;; #: Sort rest if more parts
