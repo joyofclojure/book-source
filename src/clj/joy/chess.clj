@@ -30,4 +30,4 @@
     (board (index file rank))))
 
 ;; (lookup (initial-board) "a8")
-;;=> \R
+;;=> \r
