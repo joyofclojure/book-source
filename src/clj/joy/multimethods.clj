@@ -79,14 +79,14 @@
 
 (defmulti compile-cmd (juxt :os compiler)) ;; juxt builds a vector (see sidebar)
 
-(defmethod compile-cmd [::osx "gcc"] [m]   ;; Match the vector exactly
+(defmethod compile-cmd [::osx "clang"] [m]   ;; Match the vector exactly
   (str "/usr/bin/" (get m :c-compiler)))
 
 (defmethod compile-cmd :default [m]
   (str "Unsure where to locate " (get m :c-compiler)))
 
 (with-prn (compile-cmd osx))
-;=> "/usr/bin/gcc"
+;=> "/usr/bin/cc"
 
 (with-prn (compile-cmd unix))
 ;=> "Unsure where to locate cc"
