@@ -1,7 +1,7 @@
 (ns joy.multimethods)
 
 (defmacro with-prn [& body]
-  `(try (prn (do ~@body)) (catch Throwable t# (prn t#))))
+  `(try (let [x# (do ~@body)] (prn x#) x#) (catch Throwable t# (prn t#))))
 
 (defn beget [this proto]
   (assoc this ::prototype proto))
