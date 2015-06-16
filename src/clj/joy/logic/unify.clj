@@ -1,4 +1,4 @@
-(ns joy.unify)
+(ns joy.logic.unify)
 
 (defn lvar? [x]
   (boolean

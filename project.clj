@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2138"]
                  [org.clojure/core.unify "0.5.3"]
-                 [org.clojure/core.logic "0.8.5"]]
+                 [org.clojure/core.logic "0.8.4"]]
   :source-paths ["src/clj"]
   :aot [joy.gui.DynaFrame]
   :plugins [[lein-cljsbuild "0.3.2"]]
