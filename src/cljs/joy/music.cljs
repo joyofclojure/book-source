@@ -47,15 +47,15 @@
   play. It must return an AudioNode object that will play that note."
   [note-fn notes]
   (if-let [ctor (or (.-AudioContext js/window)
-                      (.-webkitAudioContext js/window))]
+                    (.-webkitAudioContext js/window))]
     (let [ctx (make-once ctor)
           compressor (.createDynamicsCompressor ctx)] ;; for the safety of your speakers and ears
-      (let [now (.-currentTime ctx)]
-        (doseq [note notes]
-          (->
-           (note-fn ctx (update-in note [:delay] + now))
-           (connect-to compressor))))
-      (connect-to compressor (.-destination ctx)))
+     (let [now (.-currentTime ctx)]
+       (doseq [note notes]
+        (->
+         (note-fn ctx (update-in note [:delay] + now))
+         (connect-to compressor))))
+     (connect-to compressor (.-destination ctx)))
     (js/alert "Sorry, this browser doesn't seem to support AudioContext")))
 
 #_(play! woo [{:cent 1100, :duration 1, :delay 0, :volume 0.4}])
