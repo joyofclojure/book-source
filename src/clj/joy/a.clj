@@ -44,7 +44,7 @@
 (defn astar [start-yx step-est cell-costs]
   (let [size (count cell-costs)]
     (loop [steps 0
-           routes (vec (replicate size (vec (replicate size nil))))
+           routes (vec (repeat size (vec (repeat size nil))))
            work-todo (sorted-set [0 start-yx])]
       (if (empty? work-todo)                    ;; #: Check done
         [(peek (peek routes)) :steps steps] ;; #: Grab the first route
