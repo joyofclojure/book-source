@@ -8,7 +8,7 @@
   <volume> in 50 milliseconds, then ramps back down to silent after
   <duration>"
   [ctx {:keys [volume delay duration]}]
-  (let [node (.createGainNode ctx)]    ;; createGain
+  (let [node (.createGain ctx)]
     (doto (.-gain node)
       (.linearRampToValueAtTime 0 delay)
       (.linearRampToValueAtTime volume (+ delay 0.05))
@@ -21,8 +21,8 @@
   (let [node (.createOscillator ctx)]
     (set! (-> node .-frequency .-value) 440)
     (set! (-> node .-detune .-value) (- cent 900))
-    (.noteOn node delay)
-    (.noteOff node (+ delay duration))
+    (.start node delay)
+    (.stop node (+ delay duration))
     node))
 
 (defn connect-to
