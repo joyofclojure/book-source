@@ -42,7 +42,7 @@
 (defn flatten-ast [ast]
   (mapcat #(tree-seq :children :children %) ast))
 
-;; (def flat-ast (flatten-ast (file-ast "cljs/src/joy/music.cljs")))
+;; (def flat-ast (flatten-ast (file-ast "src/cljs/joy/music.cljs")))
 ;; (count flat-ast)
 
 (defn get-interop-used
