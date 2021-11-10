@@ -1,6 +1,6 @@
 (ns joy.generators)
 
-(def ascii (map char (range 65 (+ 65 26))))
+(def ascii (mapv char (range 65 (+ 65 26))))
 
 (defn rand-str [sz alphabet]
   (apply str (repeatedly sz #(rand-nth alphabet))))
